@@ -1,0 +1,4 @@
+[28-May-2017 08:59:18 UTC] PHP Parse error:  syntax error, unexpected '}', expecting ',' or ';' in /home/mmantra/public_html/mavin360.com/demo/nkd/dev/app/Controller/WebserviceController.php on line 53
+[28-May-2017 08:59:32 UTC] PHP Parse error:  syntax error, unexpected '}', expecting ',' or ';' in /home/mmantra/public_html/mavin360.com/demo/nkd/dev/app/Controller/WebserviceController.php on line 53
+[28-May-2017 08:59:32 UTC] PHP Parse error:  syntax error, unexpected '}', expecting ',' or ';' in /home/mmantra/public_html/mavin360.com/demo/nkd/dev/app/Controller/WebserviceController.php on line 53
+[03-Jun-2017 12:06:46 UTC] PHP Parse error:  syntax error, unexpected 'Option' (T_STRING), expecting ',' or ';' in /home/mmantra/public_html/mavin360.com/demo/nkd/dev/app/Controller/ModifierController.php on line 178

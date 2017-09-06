@@ -1,0 +1,52 @@
+.admin-login{
+	margin-top:10%;
+}
+.img_crop img{height: 200px;
+width: 200px;}
+#ProfileUpload .modal-dialog{width: 900px;}
+#ProfileUpload .modal-body{min-height: 100px;}
+.update-img > a {
+  float: left;
+  height: 70px;
+  width: 70px;
+}
+.update-img img.user-image{height: auto;
+width: 100%;}
+.update-img{position: relative;
+top: -65%;margin-bottom: 1%;}
+.welcome{
+    text-align: center;
+    font-size: 30px;
+    line-height: 35px;
+    text-decoration: blink;
+    text-transform: uppercase;
+	padding:4% 0px 6%;
+}
+.clear{clear: both;}
+.coupon-code { display: none; }
+.error{    color: red;
+    font-style: normal;
+    font-weight: normal;
+    font-family: monospace;}
+.textt-center{text-align: center;}
+.language-panel{min-height: 250px;}
+.language-panel .contiue-btn, .language-panel .select-lang{margin-top: 5%;}
+.fl-left{float: left;}
+.fl-right{float: right;}
+.small-box > .inner h3 {
+    font-size: 30px;
+    float: left;
+    clear: both;
+}
+
+.small-box > .inner p {
+    font-size: 20px;
+    padding-top: 30%;
+}
+.small-box > .small-box-footer{
+   font-size:15px; 
+}
+#loading_block .text {color: #fff;}
+#optionsDropdown, #addedDropdown {display: none;}
+.user-menu>a{display: inline-block !important; line-height: 23px !important;}
+#additionFields input[type="radio"] { margin-right: 2%; margin-left: 2%; }
