@@ -192,7 +192,7 @@ class WebserviceController extends AppController {
 														'Product.id', 'Product.lang_id','Product.category_id',
 														'Product.sub_category_id', 'Product.short_description', 'Product.plu_code',
 														'Product.title', 'Product.price_title', 'Product.slug','Product.price','Product.image',
-														'Product.thumb_image','Product.sort_order'
+														'Product.thumb_image','Product.sort_order','groupv','grouph','groupvh'
 														
 												),
 										'order' => array('Product.sort_order' => 'asc')		
