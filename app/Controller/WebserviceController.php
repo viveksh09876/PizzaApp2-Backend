@@ -178,7 +178,7 @@ class WebserviceController extends AppController {
     }
 	
 	
-	public function get_all_categories_data($storeId = 1, $menuCountry = 'UAE'){
+	public function get_all_categories_data($storeId = 1, $menuCountry = 'UK'){
 		
 		//Configure::write('debug', 2);
         $this->layout = FALSE;
@@ -192,7 +192,7 @@ class WebserviceController extends AppController {
 														'Product.id', 'Product.lang_id','Product.category_id',
 														'Product.sub_category_id', 'Product.short_description', 'Product.plu_code',
 														'Product.title', 'Product.price_title', 'Product.slug','Product.price','Product.image',
-														'Product.thumb_image','Product.sort_order'
+														'Product.thumb_image','Product.sort_order','groupv','grouph','groupvh'
 														
 												),
 										'order' => array('Product.sort_order' => 'asc')		
@@ -230,8 +230,9 @@ class WebserviceController extends AppController {
 		//echo '<pre>'; print_r($data); die;
 		//$plu_json = $this->curlGetRequest('https://nkdpizza.com/beta/pos/index.php/menu/'.$menuCountry);
 		
-		$plu_json = $this->curlGetRequest(APIURL.'/index.php/menu/UAE');
+		$plu_json = $this->curlGetRequest(APIURL.'/index.php/menu/UK');
 		$plu_json = json_decode($plu_json, true);
+		//echo '<pre>'; print_r($plu_json); die;
 		$plu_json = $plu_json['item'];
 		$resp = array();
 		$all_categories = $cats = $subCats = array();
@@ -291,9 +292,11 @@ class WebserviceController extends AppController {
 										
 									}else{
 										if(isset($pdat['PLU'])) {
+											
 											if($prod['plu_code'] == $pdat['PLU']) {
+												
 												$prod['is_price_mapped'] = 1;
-												$prod['price'] = $pdat['Price']. ' DHS';
+												$prod['price'] = '£'.$pdat['Price'];
 											}	
 										}
 									}									
@@ -342,7 +345,7 @@ class WebserviceController extends AppController {
     }
 	
 	
-	public function getItemData($slug = '', $menuCountry = 'UAE') {
+	public function getItemData($slug = '', $menuCountry = 'UK') {
 		//Configure::write('debug', 2);
 		if($slug != '') {
 			
@@ -353,7 +356,7 @@ class WebserviceController extends AppController {
 	}
     
 	
-	public function getFormattedItemData($slug, $menuCountry = 'UAE') {
+	public function getFormattedItemData($slug, $menuCountry = 'UK') {
 		$this->Product->recursive = 6;
 			
 			$this->OptionSuboption->bindModel(array(
@@ -442,7 +445,7 @@ class WebserviceController extends AppController {
 										));
 			
 			//$plu_json = $this->curlGetRequest('https://nkdpizza.com/beta/pos/index.php/menu/'.$menuCountry);
-			$plu_json = $this->curlGetRequest(APIURL.'/index.php/menu/UAE');
+			$plu_json = $this->curlGetRequest(APIURL.'/index.php/menu/UK');
 			$plu_json = json_decode($plu_json, true);
 			
 			
@@ -1607,7 +1610,7 @@ function sendCareerInfo(){
 	}
 	
 	
-	public function prepareFavResponse($favData, $itemSlug, $menuCountry = 'UAE') {
+	public function prepareFavResponse($favData, $itemSlug, $menuCountry = 'UK') {
 		//if(!empty($favData)) {
 			$favDataObj = $favData;
 			$favData = $favData['modifiers'];
