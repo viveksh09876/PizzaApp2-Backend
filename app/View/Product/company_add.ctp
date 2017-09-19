@@ -100,7 +100,7 @@
   <?php 
   echo $this->Form->input('Product.groupv', array('type' => 'checkbox','label'=>'V')); 
   echo $this->Form->input('Product.grouph', array('type' => 'checkbox','label'=>'H')); 
-  echo $this->Form->input('Product.groupvh', array('type' => 'checkbox','label'=>'VH')); 
+  echo $this->Form->input('Product.groupvh', array('type' => 'checkbox','label'=>'GF')); 
   ?>
  </div>
 </div>
