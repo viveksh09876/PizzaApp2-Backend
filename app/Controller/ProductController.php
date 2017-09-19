@@ -88,7 +88,7 @@ class ProductController extends AppController{
 		$pageVar['sub_title'] = 'Add new item';
 		$pageVar['breadcrumb'] = '<li><a href="'.ADMIN_WEBROOT.'"><i class="fa fa-dashboard"></i> Home</a></li><li class="active">Add Item</li>';
         $pageVar['categories'] = $this->Core->getList('Category',array('id','name'),array('status'=>1));
-		if ($this->request->is('post')) {
+		if ($this->request->is('post')) {    
             $this->request->data['Product']['store_id'] = $this->Auth->user('user_id');
             $included = (!empty($this->request->data['Product']['included']))?$this->request->data['Product']['included']:array();
             $added = (!empty($this->request->data['Product']['added']))?$this->request->data['Product']['added']:array();
@@ -203,6 +203,10 @@ class ProductController extends AppController{
             $special_instruction = $this->request->data['Product']['special_instruction'];
             $short_description = $this->request->data['Product']['short_description'];
             $status = $this->request->data['Product']['status'];
+            $tax = $this->request->data['Product']['tax'];
+            $groupv = $this->request->data['Product']['groupv'];
+            $grouph = $this->request->data['Product']['grouph'];
+            $groupvh = $this->request->data['Product']['groupvh'];
 
             $productData = array();
             foreach ($storeIds as $key => $storeId) {
@@ -219,7 +223,11 @@ class ProductController extends AppController{
                     'sort_order'=>$sort_order,
                     'special_instruction'=>$special_instruction,
                     'short_description'=>$short_description,
-                    'status'=>$status
+                    'status'=>$status,
+                    'tax'=>$tax,
+                    'groupv'=>$groupv,
+                    'grouph'=>$grouph,
+                    'groupvh'=>$groupvh,
                 );
 
                 $this->Product->create();
@@ -270,6 +278,7 @@ class ProductController extends AppController{
         $pageVar['sub_title'] = 'Edit item details';
         $pageVar['breadcrumb'] = '<li><a href="'.ADMIN_WEBROOT.'"><i class="fa fa-dashboard"></i> Home</a></li><li class="active">Edit Item</li>';
         $pageVar['categories'] = $this->Core->getList('Category',array('id','name'),array('status'=>1));
+        $pageVar['selected'] = array();
         $this->Product->id = $id;
         $this->Product->bindModel(array('hasMany'=>array('ProductIncludedModifier','ProductModifier')));
         $data = $this->Product->read(null,$id);

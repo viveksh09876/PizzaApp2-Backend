@@ -82,6 +82,22 @@
  </div>
 </div>
 <div class="form-group col-sm-6">
+  <label class="col-sm-3 control-label" for="inputPassword3">Tax</label>
+  <div class="col-sm-9">
+   <?php echo $this->Form->input('tax', array('label'=>false,'class'=>'form-control')); ?>
+ </div>
+</div>
+<div class="form-group col-sm-6">
+  <label class="col-sm-3 control-label" for="inputPassword3">Group</label>
+  <div class="col-sm-9">
+  <?php 
+  echo $this->Form->input('Product.groupv', array('type' => 'checkbox','label'=>'V')); 
+  echo $this->Form->input('Product.grouph', array('type' => 'checkbox','label'=>'H')); 
+  echo $this->Form->input('Product.groupvh', array('type' => 'checkbox','label'=>'VH')); 
+  ?>
+ </div>
+</div>
+<div class="form-group col-sm-6">
   <label class="col-sm-12 control-label" for="inputPassword3">Short Description</label>
   <div class="col-sm-12">
    <?php echo $this->Form->input('short_description', array('label'=>false,'class'=>'form-control','maxlength'=>300,'rows'=>10,'after'=>'(Maximum 300 characters allowed)')); ?>

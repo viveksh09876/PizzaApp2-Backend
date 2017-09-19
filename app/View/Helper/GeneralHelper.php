@@ -45,7 +45,7 @@ class GeneralHelper extends Helper {
 		
 		$Model = ClassRegistry::init('Store');
 		$data = $Model->findById($storeId['UserStore']['store_id'],array('Store.store_name'));
-		return $data['Store']['store_name'];
+		return (isset($data['Store']['store_name']))?$data['Store']['store_name']:'';
 	}
 
 	public function getCategoryNameById($categoryId){	
