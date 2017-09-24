@@ -7,7 +7,7 @@ class TempController extends AppController {
     function beforeFilter(){
         parent::beforeFilter();
 		//Configure::write('debug', 2);
-        $this->Auth->allow(array('get_categories','getip','get_languages','get_slides','get_sub_categories','get_products','get_modifiers','get_options','get_suboptions','getImagePath','get_all_categories_data','getItemData','placeOrder','getStoreList','getStoresFromPostalCode', 'getStoresFromLatLong','getStoreDetails','login','getTwitterFeeds','getInstagramPost','getCountryStores','saveFavItem','getCitiesSuggestion','getFBFeed','getIGFeed','getPrefrences','signUp', 'getFav', 'getFavItemData','applyCoupon','getFavOrderData','getProfile','sendCateringInfo','sendContactInfo','sendCareerInfo','getOrderHistory','updateProfile','getProductNameByPlu','getModifierName','updatePrefrence','sendtestmail'));
+        $this->Auth->allow(array('get_categories','getip','get_languages','get_slides','get_sub_categories','get_products','get_modifiers','get_options','get_suboptions','getImagePath','get_all_categories_data','getItemData','placeOrder','getStoreList','getStoresFromPostalCode', 'getStoresFromLatLong','getStoreDetails','login','getTwitterFeeds','getInstagramPost','getCountryStores','saveFavItem','getCitiesSuggestion','getFBFeed','getIGFeed','getPrefrences','signUp', 'getFav', 'getFavItemData','applyCoupon','getFavOrderData','getProfile','sendCateringInfo','sendContactInfo','sendCareerInfo','getOrderHistory','updateProfile','getProductNameByPlu','getModifierName','updatePrefrence','sendtestmail', 'getItemSuggestions', 'sendPaymentData'));
     }
 
     public function sendtestmail(){
@@ -1777,6 +1777,56 @@ function sendCareerInfo(){
 				echo json_encode($responseArr);
 			}			
 		}
+		die;
+	}
+	
+	
+	public function getItemSuggestions() {
+		$categories = $this->request->input ( 'json_decode', true);	
+		$getMissingCategories = $this->Category->find('all', array(
+									'conditions' => array(
+										'NOT' => array(
+											'Category.id' => $categories
+										),
+										'Category.status' => 1
+									),
+									'fields' => array('Category.id')
+							));
+							
+							
+		echo '<pre>'; print_r($getMissingCategories); die;
+	}
+	
+	
+	
+	public function sendPaymentData() {
+		$card = $this->request->input ( 'json_decode', true);
+		
+		if (!empty($card)) {
+			
+			$details = array(
+				'name' => $card['name'],
+				'customer-id' =>  $card['customerId'],
+				'customer-email' =>  $card['customerEmail'],
+				'postal-code' =>  $card['postalCode'],
+				'amount' =>  $card['amount'],
+				'expiration-month' => $card['expirationMonth'],
+				'expiration-year' => $card['expirationYear'],
+				'card' => $card['card'],
+				'cvc' => $card['cvc'],
+				'3ds' => $card['type']
+			);	
+			
+			//$details = json_encode($details);
+			//echo $details; die;
+			$url = 'http://35.185.240.172/nkd/index.php/Pay';
+			 
+			$result     = $this->curlPostRequest($url, $details);
+			$response   = json_decode($result);
+			$response = json_encode((array) $response);
+			echo $response; die;
+		}
+		
 		die;
 	}
 
