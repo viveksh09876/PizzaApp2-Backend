@@ -26,12 +26,13 @@ class CoreComponent extends Component  {
         return $model->find('count',array('conditions'=>$condtions));
     }
 
-    function getList($model, $fields=array(), $conditions=array()){
+    function getList($model, $fields=array(), $conditions=array(),$joins=array()){
         $recordList = array();
         $model = ClassRegistry::init($model);
         $recordList  = $model->find('list',array(
             'fields' => $fields,
-            'conditions' => $conditions
+            'conditions' => $conditions,
+            'joins'=>$joins
             )
         );
         return $recordList;

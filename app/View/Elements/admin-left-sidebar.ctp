@@ -88,6 +88,17 @@
           <li><a href="<?=ADMIN_WEBROOT?>coupons/add"><i class="fa fa-angle-double-right"></i> Add Coupon</a></li>
         </ul>
       </li>
+       <li class="treeview <?php echo (strtolower($this->params->controller)=='coupons')?'active':'';?>">
+        <a href="#">
+          <i class="fa fa-hand-o-right"></i>
+          <span>Manage Deals</span>
+          <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu">
+          <li><a href="<?=ADMIN_WEBROOT?>deals"><i class="fa fa-angle-double-right"></i> List Deals</a></li>
+          <li><a href="<?=ADMIN_WEBROOT?>deals/add"><i class="fa fa-angle-double-right"></i> Add Deal</a></li>
+        </ul>
+      </li>
     </ul>
   </section>
 </aside>

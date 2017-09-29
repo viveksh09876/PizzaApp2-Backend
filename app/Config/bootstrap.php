@@ -193,3 +193,7 @@ function getValidStatus($value){
         return 0;
     }
 }
+
+function conditions(){
+    return array('OR'=>'OR','AND'=>'AND');
+}
