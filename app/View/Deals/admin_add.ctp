@@ -1,4 +1,4 @@
-<?php extract($pageVar); debug($pageVar); ?>
+<?php extract($pageVar); ?>
 <section class="content-header">
   <h1>
     <?=$title;?>
@@ -96,6 +96,17 @@
                   array(
                     'url'=>array('controller'=>'deals','action'=>'make_group'),
                     'success'=>'makegGroupResponse(data,textStatus)',
+                    'before'=>$this->Js->get('#loader')->effect('show', array('buffer' => false)),
+                    'complete' => $this->Js->get('#loader')->effect('hide', array('buffer' => false)),
+                    'div'=>false,
+                    'class'=>'btn btn-info'
+                  ) 
+                );
+                echo $this->Js->submit(
+                  'Save Deal',
+                  array(
+                    'url'=>array('controller'=>'deals','action'=>'save_deal'),
+                    'success'=>'saveDealResponse(data,textStatus)',
                     'before'=>$this->Js->get('#loader')->effect('show', array('buffer' => false)),
                     'complete' => $this->Js->get('#loader')->effect('hide', array('buffer' => false)),
                     'div'=>false,
@@ -206,31 +217,34 @@
         url:'<?php echo WEBROOT ?>deals/getDealItemList/'+dealId,
         method:'GET',
         beforeSend:function(){
-          // $.loadingBlockShow({
-          //   imgPath: '<?=IMG?>icon.gif',
-          //   text: 'Please Wait Loading ...',
-          //   style: {
-          //       position: 'fixed',
-          //       width: '100%',
-          //       height: '100%',
-          //       background: 'rgba(0, 0, 0, .8)',
-          //       left: 0,
-          //       top: 0,
-          //       zIndex: 10000
-          //   }
-          // });
+          $.loadingBlockShow({
+            imgPath: '<?=IMG?>icon.gif',
+            text: 'Please Wait Loading ...',
+            style: {
+                position: 'fixed',
+                width: '100%',
+                height: '100%',
+                background: 'rgba(0, 0, 0, .8)',
+                left: 0,
+                top: 0,
+                zIndex: 10000
+            }
+          });
         },
         success:function(response){
-          $('#DealItemCategory').val('');
+          $('.deal_id').val(dealId);
+          $('#group-items').html(response);
           $('#manage-requirment').hide();
-          var data =  $.parseJSON(response);
-          $('#group-items').html('');
-          $.each(data, function(key, value){
-            $('#group-items').append('<input type="checkbox" name="data[DealGroup][deal_item_id][]" value="'+value.DealItem.id+'">'+value.Product.title+'<br>');
-          });
+
+          // $('#DealItemCategory').val('');
+          // var data =  $.parseJSON(response);
+          // $('#group-items').html('');
+          // $('.deal_id').val(dealId);
+          // $.each(data, function(key, value){
+          //   $('#group-items').append('<input type="checkbox" name="data[DealGroup][deal_item_id][]" value="'+value.DealItem.id+'">'+value.Product.title+'<br>');
+          // });
           $('#manage-group').show();
-          console.log(data);
-          //$.loadingBlockHide();
+          $.loadingBlockHide();
         }
 
       });
@@ -238,7 +252,43 @@
   }
 
   function makegGroupResponse(data,textStatus){
-    
+    var data = $.parseJSON(data);
+    var dealId = data.deal_id;
+    if(data.success){
+        $.ajax({
+        url:'<?php echo WEBROOT ?>deals/getDealItemList/'+dealId,
+        method:'GET',
+        beforeSend:function(){
+          $.loadingBlockShow({
+            imgPath: '<?=IMG?>icon.gif',
+            text: 'Please Wait Loading ...',
+            style: {
+                position: 'fixed',
+                width: '100%',
+                height: '100%',
+                background: 'rgba(0, 0, 0, .8)',
+                left: 0,
+                top: 0,
+                zIndex: 10000
+            }
+          });
+        },
+        success:function(response){
+          $('.deal_id').val(dealId);
+          $('#group-items').html(response);
+          $('#manage-requirment').hide();
+          $.loadingBlockHide();
+        }
+
+      });
+    }
   }
 
+  function saveDealResponse(data,textStatus){
+    var data = $.parseJSON(data);
+    if(data.isSuccess){
+      alert('Thanks, Deal added successfully.');
+      window.location.href = 'index';
+    }
+  }
 </script>

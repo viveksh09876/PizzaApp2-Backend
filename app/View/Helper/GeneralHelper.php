@@ -54,4 +54,26 @@ class GeneralHelper extends Helper {
 		return $data['Category']['name'];
 	}
 
+	public function getDealItem($itemId){	
+		$Model = ClassRegistry::init('DealItem');
+
+		$joins = array(
+            array(
+                'table'=>'products',
+                'alias'=>'Product',
+                'type'=>'LEFT',
+                'conditions'=>'Product.plu_code = DealItem.product_plu'
+            )  
+        );
+
+		$data = $Model->find('first',array('conditions'=>array('DealItem.id'=>$itemId),'joins'=>$joins));
+		return $data['Product']['title'];
+	}
+
+	public function getProductName($pluCode){
+		$Model = ClassRegistry::init('Product');
+		$data = $Model->find('first',array('conditions'=>array('Product.plu_code'=>$pluCode)));
+		return isset($data['Product']['title'])?$data['Product']['title']:null;
+	}
+
 }
