@@ -11,6 +11,7 @@
 <section class="content">
 	<div class="row">
 		<div class="col-xs-12">
+			<?php echo $this->Session->flash(); ?>
 			<div class="box box-primary">
 			<?php if(!empty($Deals)){?>
 			<table class="table table-hover">
@@ -23,7 +24,7 @@
 					<td><?php echo $Deal['Deal']['code']; ?></td>
 					<td><?php echo getActiveInactive($Deal['Deal']['status']); ?></td>
 					<td class="pull-right">
-						<?php echo $this->Html->link(__('Delete', true), array('action' => 'delete', $Deal['Deal']['id']),array('class'=>'btn btn-default btn-sm btn-primary')); ?>
+						<?php echo $this->Html->link(__('Delete', true), array('action' => 'delete', $Deal['Deal']['id']),array('class'=>'btn btn-default btn-sm btn-primary','onclick'=>'return confirm("Are you sure want to delete?")')); ?>
 					</td>
 				</tr>
 				<?php endforeach; ?>
