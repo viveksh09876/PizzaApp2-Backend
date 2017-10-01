@@ -197,3 +197,12 @@ function getValidStatus($value){
 function conditions(){
     return array('OR'=>'OR','AND'=>'AND');
 }
+
+function getPizzaSize($value){
+    $sizeArr = array('999991'=>'Small','999992'=>'Medium','999993'=>'Large');
+    if(!empty($value)){
+        return (array_key_exists($value,$sizeArr))?$sizeArr[$value]:'';
+    }else{
+        return $sizeArr;
+    }
+}

@@ -29,7 +29,7 @@ class DealsController extends AppController {
         $pageVar['title'] = 'Add Deal';
         $pageVar['sub_title'] = 'Add new deal';
         $pageVar['breadcrumb'] = '<li><a href="'.ADMIN_WEBROOT.'"><i class="fa fa-dashboard"></i> Home</a></li><li class="active">Add Deal</li>';
-        $pageVar['sizes'] = array('999991'=>'Small','999992'=>'Medium','999993'=>'Large');
+        $pageVar['sizes'] = array(''=>'Select Size','999991'=>'Small','999992'=>'Medium','999993'=>'Large');
         $pageVar['categories'] = $this->Core->getList('Category',array('id','name'),array('status'=>1));
 
         if ($this->request->is('post')) {

@@ -51,7 +51,7 @@ class GeneralHelper extends Helper {
 	public function getCategoryNameById($categoryId){	
 		$Model = ClassRegistry::init('Category');
 		$data = $Model->findById($categoryId,array('Category.name'));
-		return $data['Category']['name'];
+		return isset($data['Category']['name'])?$data['Category']['name']:'';
 	}
 
 	public function getDealItem($itemId){	
