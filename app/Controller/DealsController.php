@@ -25,20 +25,44 @@ class DealsController extends AppController {
         $this->set(compact('Deals','pageVar'));
     }
 
-    public function admin_add() {
+    public function admin_add($dealId=null) {
         $pageVar['title'] = 'Add Deal';
         $pageVar['sub_title'] = 'Add new deal';
         $pageVar['breadcrumb'] = '<li><a href="'.ADMIN_WEBROOT.'"><i class="fa fa-dashboard"></i> Home</a></li><li class="active">Add Deal</li>';
-        $pageVar['sizes'] = array(''=>'Select Size','999991'=>'Small','999992'=>'Medium','999993'=>'Large');
+        $pageVar['sizes'] = array('999991'=>'Small','999992'=>'Medium','999993'=>'Large');
+        $pageVar['crusts'] = array('I100'=>'Original Crust','I101'=>'Skinny Crust','I102'=>'Glueten Free');
         $pageVar['categories'] = $this->Core->getList('Category',array('id','name'),array('status'=>1));
+        $pageVar['dealId'] = $dealId;
 
-        if ($this->request->is('post')) {
+        if ($this->request->is('post')) {           
+             if(!empty($this->request->data['Deal']['image']) && !empty($this->request->data['Deal']['image']['name'])){
+                $file = explode('.',$this->request->data['Deal']['image']['name']);
+                $file[0] = strtolower($file[0]).time();
+                $file = implode('.',$file);
+                $newPath = 'img/admin/deals/'.$file; 
+                move_uploaded_file($this->request->data['Deal']['image']['tmp_name'], $newPath);
+                $this->request->data['Deal']['image'] = $file;     
+            }else{
+                unset($this->request->data['Deal']['image']);
+            }
+
+            if(!empty($this->request->data['Deal']['thumbnail']) && !empty($this->request->data['Deal']['thumbnail']['name'])){
+                $file = explode('.',$this->request->data['Deal']['thumbnail']['name']);
+                $file[0] = strtolower($file[0]).time();
+                $file = implode('.',$file);
+                $newPath = 'img/admin/deals/'.$file; 
+                move_uploaded_file($this->request->data['Deal']['thumbnail']['tmp_name'], $newPath);
+                $this->request->data['Deal']['thumbnail'] = $file;     
+            }else{
+                unset($this->request->data['Deal']['thumbnail']);
+            }
+
             $this->request->data['Deal']['store_id'] = $this->Auth->user('user_id');
             if ($this->Deal->addDeal($this->request->data)) {
-                echo $this->Deal->getLastInsertId();
-                die;
+                $dealId = $this->Deal->getLastInsertId();
+                $this->redirect('add/'.$dealId);
             } else {
-                echo 0; die;
+                $this->Session->setFlash(__('Sorry! deal not added.'),'default',array('class'=>'alert alert-danger'));
             }
         }
         $this->set('pageVar',$pageVar);
@@ -50,13 +74,24 @@ class DealsController extends AppController {
         $dataArr = array();
         if(isset($this->request->data)){
             $data = $this->request->data;
+            $categoryId = $data['DealItem']['category'];
+
+            $size = (isset($data['DealItem']['size']) && $categoryId==1)?$data['DealItem']['size']:null;
+            $crust1 = (isset($data['DealItem']['crust1']) && $categoryId==1)?$data['DealItem']['crust1']:null;
+            $crust2 = (isset($data['DealItem']['crust2']) && $categoryId==1)?$data['DealItem']['crust2']:null;
+            $crust3 = (isset($data['DealItem']['crust3']) && $categoryId==1)?$data['DealItem']['crust3']:null;
+            
             $dataArr['DealItem']['deal_id'] = $data['DealItem']['deal_id'];
             $dataArr['DealItem']['cat_id'] = $data['DealItem']['category'];
-            $dataArr['DealItem']['size'] = $data['DealItem']['size'];
+            $dataArr['DealItem']['size'] = $size;
+            $dataArr['DealItem']['crust1'] = $crust1;
+            $dataArr['DealItem']['crust2'] = $crust2;
+            $dataArr['DealItem']['crust3'] = $crust3;
             $dataArr['DealItem']['product_plu'] = $data['DealItem']['product'];
-            $dataArr['DealItem']['modifier_plu'] = $data['DealItem']['modifier'];
+            // $dataArr['DealItem']['modifier_plu'] = $data['DealItem']['modifier'];
             $dataArr['DealItem']['quantity'] = $data['DealItem']['quantity'];
-
+            $dataArr['DealItem']['price'] = $data['DealItem']['price'];
+            
             if($this->DealItem->save($dataArr)){
                 echo json_encode(array('success'=>1,'deal_id'=>$data['DealItem']['deal_id']));
             }else{

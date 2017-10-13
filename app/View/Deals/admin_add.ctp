@@ -12,7 +12,7 @@
 	<div class="row">
 		<div class="col-xs-12">
 			<div class="box box-primary" style="min-height: 400px;">
-				<?php echo $this->Form->create('Deal',array('id'=>'AddEditDeal','preventDefault'=>true));?>
+				<?php echo $this->Form->create('Deal',array('type'=>'file','id'=>'AddEditDeal','preventDefault'=>true));?>
         <div class="box-body">
           <div id="add-deal-sec">
           <div class="form-group col-sm-4">
@@ -22,12 +22,19 @@
           </div>
           <div class="form-group col-sm-4">
             <div class="col-sm-12">
-              <?php echo $this->Form->input('image_text', array('label'=>'Image Text','class'=>'form-control','title'=>'Please enter image text.','required'=>true,'placeholder'=>'Image Text')); ?>
+              <?php echo $this->Form->input('image_text', array('label'=>'Image Text','class'=>'form-control','title'=>'Please enter image text.','placeholder'=>'Image Text')); ?>
             </div>
           </div>
           <div class="form-group col-sm-4">
             <div class="col-sm-12">
-              <?php echo $this->Form->input('description', array('label'=>'Deal Description','class'=>'form-control','title'=>'Please enter deal description.','required'=>true,'placeholder'=>'Deal Description')); ?>
+              <label>Image</label>
+              <?php echo $this->Form->file('image', array('title'=>'Please upload image.')); ?>
+            </div>
+          </div>
+          <div class="form-group col-sm-4  clear">
+            <div class="col-sm-12">
+              <label>Image Thumbnail</label>
+              <?php echo $this->Form->file('thumbnail', array('title'=>'Please upload thumbnail image.')); ?>
             </div>
           </div>
           <div class="form-group col-sm-4">
@@ -40,41 +47,75 @@
               <?php echo $this->Form->input('status', array('label'=>'Status','options'=>ActiveInactive(),'class'=>'form-control')); ?>
             </div>
           </div>
+          <div class="form-group col-sm-12">
+            <div class="col-sm-12">
+              <?php echo $this->Form->input('description', array('label'=>'Deal Description','class'=>'form-control','title'=>'Please enter deal description.','required'=>true,'placeholder'=>'Deal Description')); ?>
+            </div>
+          </div>
           <div class="form-group col-sm-4">
             <div class="col-sm-12">
               <?php  
-              echo $this->Js->submit(
-                'Continue >>',
-                array(
-                  'url'=>array('controller'=>'deals','action'=>'add'),
-                  'success'=>'dealResponse(data,textStatus)',
-                  'before'=>'return dealValidate()',
-                  'complete' => $this->Js->get('#loader')->effect('hide', array('buffer' => false)),
-                  'div'=>false,
-                  'class'=>'btn btn-info pull-right',
-                  'style'=>'float: left !important; margin-top: 8%;',
-                  'id'=>'addDealSbt'
-                ) 
+              // echo $this->Js->submit(
+              //   'Continue >>',
+              //   array(
+              //     'url'=>array('controller'=>'deals','action'=>'add'),
+              //     'success'=>'dealResponse(data,textStatus)',
+              //     'before'=>'return dealValidate()',
+              //     'complete' => $this->Js->get('#loader')->effect('hide', array('buffer' => false)),
+              //     'div'=>false,
+              //     'class'=>'btn btn-info pull-right',
+              //     'style'=>'float: left !important; margin-top: 8%;',
+              //     'id'=>'addDealSbt'
+              //   ) 
+              // );
+    
+              $options = array(
+                'class'=>'btn btn-info',
+                'disabled'=>(!empty($dealId))?'true':'false',
               );
+              echo $this->Form->submit('Continue',$options);
               echo $this->Form->end();
-              echo $this->Js->writeBuffer();
+              // echo $this->Js->writeBuffer();
               ?>
               <?php  echo $this->Html->image('loading_medium.gif', array('id'=>'loader')); ?>
             </div>
           </div>
         </div>
-          <div id="add-req-sec" class="col-sm-12">
+          <div style="<?php echo (!empty($dealId))?'display:block;':'display:none'; ?>" id="add-req-sec" class="col-sm-12">
             <div class="col-sm-12"><a href="javascript:$('#manage-requirment').toggle();" class="btn btn-info"><i class="fa fa-plus"></i> Addd Requirments</a></div>
           </div>
           <div id="manage-requirment" class="col-sm-12">
             <div class="col-sm-12">
               <?php
                 echo $this->Form->create('DealItem');
-                echo $this->Form->input('deal_id',array('type'=>'hidden'));
+                echo $this->Form->input('deal_id',array('type'=>'hidden','value'=>$dealId));
                 echo $this->Form->input('category',array('options'=>$categories,'class'=>'form-control col-sm-6','empty'=>'Select Category','title'=>'Please select category','label'=>'Select Category','onchange'=>'getProducts(this.value)','required'=>true));
-                echo $this->Form->input('size',array('options'=>$sizes,'class'=>'form-control col-sm-6','label'=>'Select Size', 'div'=>array('id'=>'sizeSec')));
-                echo $this->Form->input('product',array('options'=>array(),'class'=>'form-control col-sm-6','multiple'=>false,'label'=>'Select Product', 'empty'=>'Select Product','onchange'=>'getModifiers(this)','div'=>array('id'=>'productSec')));
-                echo $this->Form->input('modifier',array('options'=>array(),'class'=>'form-control col-sm-6','label'=>'Select Modifier', 'empty'=>'Select Modifier','div'=>array('id'=>'modifierSec')));
+
+                echo '<div id="sizeSec">';
+                $attributes = array(
+                    'legend' => false,
+                );
+
+                echo $this->Form->radio('size', $sizes, $attributes);
+                echo '</div>';
+
+                echo '<div id="crustSec">';
+                $i = 1;
+                foreach ($crusts as $key => $value) {
+                    echo $this->Form->input('crust'.$i, array(
+                      'type'=>'checkbox',
+                      'value'=>$key,
+                      'label'=>$value,
+                      'hiddenField'=>false,
+                      'format' => array('before', 'input', 'between', 'label', 'after', 'error' ) 
+                    ) ); 
+                    $i++;
+                }
+                echo '</div>';  
+                //echo $this->Form->input('curst',array('options'=>$crusts,'class'=>'form-control col-sm-6','label'=>'Select Crust','div'=>array('id'=>'crustSec')));
+
+                echo $this->Form->input('product',array('options'=>array(),'class'=>'form-control col-sm-6','multiple'=>false,'label'=>'Select Product', 'empty'=>'Select Product','div'=>array('id'=>'productSec')));
+                //echo $this->Form->input('modifier',array('options'=>array(),'class'=>'form-control col-sm-6','label'=>'Select Modifier', 'empty'=>'Select Modifier','div'=>array('id'=>'modifierSec')));
                 echo $this->Form->input('quantity',array('placeholder'=>'Product Quantity','class'=>'form-control col-sm-6'));
                 echo $this->Form->input('price',array('placeholder'=>'Product Price','class'=>'form-control col-sm-6','style'=>'margin-bottom:2%'));
 
@@ -146,7 +187,7 @@
 <script type="text/javascript">
     function dealValidate(){
       var validator = $( "#AddEditDeal" ).validate();
-      if(validator.element( "#DealTitle") && validator.element( "#DealImageText") && validator.element( "#DealDescription") && validator.element( "#DealCode")){
+      if(validator.element( "#DealTitle") && validator.element( "#DealDescription") && validator.element( "#DealCode")){
         $('#loader').show();
         return true;
       }else{
@@ -165,10 +206,11 @@
     }
 
     function getProducts(catId){
-      $('#DealItemProduct, #DealItemSize, #DealItemModifier').val(''); 
-      $('#modifierSec, #sizeSec, #productSec').hide();
+      $('#DealItemProduct, #DealItemSize, #DealItemModifier, #sizeSec, #crustSec').val(''); 
+      $('#modifierSec, #sizeSec, #productSec, #crustSec').hide();
       if(catId==1){
         $('#sizeSec').show();
+        $('#crustSec').show();
       }
 
       $.ajax({
