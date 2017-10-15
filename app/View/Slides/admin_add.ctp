@@ -21,7 +21,7 @@
            </div>
          </div>
        <div class="form-group col-sm-6 fl-left">
-        <label class="col-sm-3 control-label" for="inputPassword3">Background Image</label>
+        <label class="col-sm-3 control-label" for="inputPassword3">Desktop Image</label>
         <div class="col-sm-9">
          <?php echo $this->Form->file('image', array('label'=>false,'required'=>(!empty($this->request->data['Slide']['id']))?false:true,'title'=>'Please upload image')); ?>
          <?php if(!empty($this->request->data['Slide']['id'])&&!empty($this->request->data['Slide']['image'])){ ?>
@@ -33,7 +33,7 @@
        </div>
      </div>
      <div class="form-group col-sm-6 fl-right">
-        <label class="col-sm-3 control-label" for="inputPassword3">Foreground Image</label>
+        <label class="col-sm-3 control-label" for="inputPassword3">Mobile Image</label>
         <div class="col-sm-9">
           <?php echo $this->Form->file('text_image', array('label'=>false)); ?>
           <?php if(!empty($this->request->data['Slide']['id'])&&!empty($this->request->data['Slide']['text_image'])){ ?>
