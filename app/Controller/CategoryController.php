@@ -32,6 +32,17 @@ class CategoryController extends AppController {
         if ($this->request->is('post')) {
             $this->request->data['Category']['store_id'] = $this->Auth->user('user_id');
 
+            if(!empty($this->request->data['Category']['image']) && !empty($this->request->data['Category']['image']['name'])){
+                $file = explode('.',$this->request->data['Category']['image']['name']);
+                $file[0] = strtolower($file[0]).time();
+                $file = implode('.',$file);
+                $newPath = 'img/admin/categories/'.$file;
+                move_uploaded_file($this->request->data['Category']['image']['tmp_name'], $newPath);
+                $this->request->data['Category']['image'] = $file; 
+            }else{
+                unset($this->request->data['Category']['image']);
+            }   
+
             if ($this->Category->addCategory($this->request->data)) {
                 $this->Session->setFlash(__('The category has been added'),'default',array('class'=>'alert alert-success'));
                 $this->redirect(array('action' => 'index'));
@@ -59,6 +70,17 @@ class CategoryController extends AppController {
         }
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['Category']['store_id'] = $this->Auth->user('user_id');
+
+            if(!empty($this->request->data['Category']['image']) && !empty($this->request->data['Category']['image']['name'])){
+                $file = explode('.',$this->request->data['Category']['image']['name']);
+                $file[0] = strtolower($file[0]).time();
+                $file = implode('.',$file);
+                $newPath = 'img/admin/categories/'.$file;
+                move_uploaded_file($this->request->data['Category']['image']['tmp_name'], $newPath);
+                $this->request->data['Category']['image'] = $file; 
+            }else{
+                unset($this->request->data['Category']['image']);
+            } 
 
             if ($this->Category->updateCategory($this->request->data)) {
                 $this->Session->setFlash(__('The category has been updated'),'default',array('class'=>'alert alert-success'));
@@ -139,12 +161,24 @@ class CategoryController extends AppController {
             $slug = $this->request->data['Category']['slug'];
             $status = $this->request->data['Category']['status'];
 
+            if(!empty($this->request->data['Category']['image']) && !empty($this->request->data['Category']['image']['name'])){
+                $file = explode('.',$this->request->data['Category']['image']['name']);
+                $file[0] = strtolower($file[0]).time();
+                $file = implode('.',$file);
+                $newPath = 'img/admin/categories/'.$file;
+                move_uploaded_file($this->request->data['Category']['image']['tmp_name'], $newPath);
+                $image = $file; 
+            }else{
+                $image = null;
+            } 
+
             $storeCat = array();
             foreach ($storeIds as $key => $storeId) {
                 $storeCat[] = array(
                     'store_id'=>$storeId,
                     'name'=>$name,
                     'short_description'=>$shortDesc,
+                    'image'=>$image,
                     'sort_order'=>$sortOrder,
                     'slug'=>$slug,
                     'status'=>$status
@@ -181,6 +215,18 @@ class CategoryController extends AppController {
         }
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['Category']['store_id']= $this->request->data['Category']['store_id'][0];
+
+             if(!empty($this->request->data['Category']['image']) && !empty($this->request->data['Category']['image']['name'])){
+                $file = explode('.',$this->request->data['Category']['image']['name']);
+                $file[0] = strtolower($file[0]).time();
+                $file = implode('.',$file);
+                $newPath = 'img/admin/categories/'.$file;
+                move_uploaded_file($this->request->data['Category']['image']['tmp_name'], $newPath);
+                $this->request->data['Category']['image'] = $file; 
+            }else{
+                unset($this->request->data['Category']['image']);
+            } 
+            
             if ($this->Category->updateCategory($this->request->data)) {
                 $this->Session->setFlash(__('The category has been updated'),'default',array('class'=>'alert alert-success'));
                 $this->redirect(array('action' => 'index'));

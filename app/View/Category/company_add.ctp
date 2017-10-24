@@ -33,6 +33,12 @@
        <?php echo $this->Form->input('short_description', array('label'=>false,'class'=>'form-control','rows'=>'6', 'maxlength'=>100,'title'=>'Maximum 100 characters are allow.','after'=>'(Maximum 100 characters allowed)')); ?>
      </div>
     </div>
+    <div class="form-group col-sm-6">
+        <label class="col-sm-3 control-label" for="inputPassword3">Image</label>
+        <div class="col-sm-9">
+         <?php echo $this->Form->file('image', array('label'=>false)); ?>
+       </div>
+     </div>
     <div class="form-group col-sm-6 fl-left">
       <label class="col-sm-3 control-label" for="inputPassword3">Sort Order</label>
       <div class="col-sm-9">

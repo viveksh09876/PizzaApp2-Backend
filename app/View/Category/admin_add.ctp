@@ -14,12 +14,6 @@
 			<div class="box box-primary">
 				<?php echo $this->Form->create('Category',array('type'=>'file','id'=>'AddEditCategory'));?>
         <div class="box-body">
-          <!-- <div class="form-group col-sm-6">
-          <label class="col-sm-3 control-label" for="inputPassword3">Language</label>
-            <div class="col-sm-9">
-             <?php // echo $this->Form->input('lang_id', array('label'=>false,'options'=>$languages,'class'=>'form-control')); ?>
-           </div>
-         </div> -->
          <div class="form-group col-sm-6">
           <label class="col-sm-3 control-label required" for="inputPassword3">Category Name</label>
             <div class="col-sm-9">
@@ -32,12 +26,12 @@
        <?php echo $this->Form->input('short_description', array('label'=>false,'class'=>'form-control','rows'=>'6', 'maxlength'=>100,'title'=>'Maximum 100 characters are allow.','after'=>'(Maximum 100 characters allowed)')); ?>
      </div>
     </div>
-       <!-- <div class="form-group col-sm-6">
+       <div class="form-group col-sm-6">
         <label class="col-sm-3 control-label" for="inputPassword3">Image</label>
         <div class="col-sm-9">
-         <?php // echo $this->Form->file('image', array('label'=>false)); ?>
+         <?php echo $this->Form->file('image', array('label'=>false)); ?>
        </div>
-     </div> -->
+     </div>
    
     <div class="form-group col-sm-6 fl-left">
       <label class="col-sm-3 control-label" for="inputPassword3">Sort Order</label>
