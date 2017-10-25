@@ -810,7 +810,7 @@ class WebserviceController extends AppController {
 					
 					if(isset($ord['modifier']) && !empty($ord['modifier'])) {
 						foreach($ord['modifier'] as $mod) {
-							if($mod['plu'] == 'I100' || $mod['plu'] == 'I101' || $mod['plu'] == '91') {
+							if($mod['plu'] == 'I100' || $mod['plu'] == 'I101' || $mod['plu'] == '217') {
 								$pizzaArr['plu'] = $mod['plu'];	
 								$pizzaArr['quantity'] = $ord['quantity'];	
 							}else{
@@ -930,7 +930,15 @@ class WebserviceController extends AppController {
 			
 			if($response['status'] == 'OK') {
 				
-				$city = strtolower($response['results'][0]['address_components'][1]['long_name']);
+				for ($i=0; $i < count($response['results'][0]['address_components']); $i++) {
+					$var = $response['results'][0]['address_components'][$i];
+					if (in_array('postal_town', $var['types'])) {
+						$city = strtolower($var['long_name']);
+					}
+				}
+
+
+				//$city = strtolower($response['results'][0]['address_components'][1]['long_name']);
 				
 				$stores = $this->Store->find('all', array(							
 								'conditions' => array(
@@ -1690,7 +1698,7 @@ function sendCareerInfo(){
 									
 									if($fop['plu_code'] == $mo['Option']['plu_code']) {
 																				
-										if ($mo['Option']['plu_code'] == 'I101' || $mo['Option']['plu_code'] == 'I100' || $mo['Option']['plu_code'] == '91') {
+										if ($mo['Option']['plu_code'] == 'I101' || $mo['Option']['plu_code'] == 'I100' || $mo['Option']['plu_code'] == '217') {
 											//echo $fop['plu_code'].'<>';
 											if ($fop['send_code'] == 1 && $fop['is_checked'] == true) {
 												$item['ProductModifier'][$i]['Modifier']['ModifierOption'][$j]['Option']['is_checked'] = true;
@@ -1733,7 +1741,7 @@ function sendCareerInfo(){
 									
 									} else {
 										
-										if($mo['Option']['plu_code'] == 'I101' || $mo['Option']['plu_code'] == 'I100' || $mo['Option']['plu_code'] == '91') {
+										if($mo['Option']['plu_code'] == 'I101' || $mo['Option']['plu_code'] == 'I100' || $mo['Option']['plu_code'] == '217') {
 											$item['ProductModifier'][$i]['Modifier']['ModifierOption'][$j]['Option']['is_checked'] = false;
 										}
 										
