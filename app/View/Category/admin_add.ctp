@@ -18,6 +18,7 @@
           <label class="col-sm-3 control-label required" for="inputPassword3">Category Name</label>
             <div class="col-sm-9">
              <?php echo $this->Form->input('name', array('label'=>false,'class'=>'form-control','title'=>'Please enter category name.')); ?>
+             <?php echo $this->Form->input('id', array('label'=>false,'type'=>'hidden')); ?>
            </div>
          </div>
          <div class="form-group col-sm-6 fl-right">
