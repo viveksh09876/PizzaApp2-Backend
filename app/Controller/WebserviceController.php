@@ -3046,6 +3046,13 @@ function sendCareerInfo(){
 		}
 	} 
 
+	function getDealList(){
+		$this->autoRender = false;
+		$this->Deal->bindModel(array('hasMany'=>array('DealItem')));
+		$deals  = $this->Deal->find('all',array('conditions'=>array('Deal.status'=>1)));
+
+		pr($deals);
+	}
 
 	
 }

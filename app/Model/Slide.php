@@ -23,4 +23,5 @@ class Slide extends AppModel {
         } 
 	    return $queryData;
 	}
+
 }

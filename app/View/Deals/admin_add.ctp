@@ -14,10 +14,10 @@
 			<div class="box box-primary" style="min-height: 400px;">
 				<?php echo $this->Form->create('Deal',array('type'=>'file','id'=>'AddEditDeal','preventDefault'=>true));?>
         <div class="box-body">
-          <div id="add-deal-sec">
+          <div style="<?php echo (empty($dealId))?'display:block;':'display:none'; ?>" id="add-deal-sec">
           <div class="form-group col-sm-4">
             <div class="col-sm-12">
-              <?php echo $this->Form->input('title', array('label'=>'Deal Title','class'=>'form-control','title'=>'Please enter deal title.','required'=>true,'placeholder'=>'Deal Title')); ?>
+              <?php echo $this->Form->input('title', array('label'=>'Title','class'=>'form-control','title'=>'Please enter title.','required'=>true,'placeholder'=>'Title')); ?>
             </div>
           </div>
           <div class="form-group col-sm-4">
@@ -27,29 +27,34 @@
           </div>
           <div class="form-group col-sm-4">
             <div class="col-sm-12">
-              <label>Image</label>
-              <?php echo $this->Form->file('image', array('title'=>'Please upload image.')); ?>
-            </div>
-          </div>
-          <div class="form-group col-sm-4  clear">
-            <div class="col-sm-12">
-              <label>Image Thumbnail</label>
-              <?php echo $this->Form->file('thumbnail', array('title'=>'Please upload thumbnail image.')); ?>
+              <?php echo $this->Form->input('code', array('label'=>'Code','class'=>'form-control','title'=>'Please enter code.','required'=>true,'placeholder'=>'Code')); ?>
             </div>
           </div>
           <div class="form-group col-sm-4">
             <div class="col-sm-12">
-              <?php echo $this->Form->input('code', array('label'=>'Deal Code','class'=>'form-control','title'=>'Please enter deal code.','required'=>true,'placeholder'=>'Deal Code')); ?>
+              <?php echo $this->Form->input('price', array('label'=>'Overall Price','class'=>'form-control','title'=>'Please enter deal overall price.','placeholder'=>'Overall Price')); ?>
             </div>
           </div>
           <div class="form-group col-sm-4">
+            <div class="col-sm-12">
+              <label>List Image</label>
+              <?php echo $this->Form->file('thumbnail', array('title'=>'Please upload list image.')); ?>
+            </div>
+          </div>
+          <div class="form-group col-sm-4">
+            <div class="col-sm-12">
+              <label>Details Image</label>
+              <?php echo $this->Form->file('image', array('title'=>'Please upload details image.')); ?>
+            </div>
+          </div>
+          <div class="form-group col-sm-4 clear">
             <div class="col-sm-12">
               <?php echo $this->Form->input('status', array('label'=>'Status','options'=>ActiveInactive(),'class'=>'form-control')); ?>
             </div>
           </div>
           <div class="form-group col-sm-12">
             <div class="col-sm-12">
-              <?php echo $this->Form->input('description', array('label'=>'Deal Description','class'=>'form-control','title'=>'Please enter deal description.','required'=>true,'placeholder'=>'Deal Description')); ?>
+              <?php echo $this->Form->input('description', array('label'=>'Description','class'=>'form-control','title'=>'Please enter description.','required'=>true,'placeholder'=>'Description')); ?>
             </div>
           </div>
           <div class="form-group col-sm-4">
@@ -81,8 +86,9 @@
             </div>
           </div>
         </div>
-          <div style="<?php echo (!empty($dealId))?'display:block;':'display:none'; ?>" id="add-req-sec" class="col-sm-12">
-            <div class="col-sm-12"><a href="javascript:$('#manage-requirment').toggle();" class="btn btn-info"><i class="fa fa-plus"></i> Addd Requirments</a></div>
+          <div style="<?php echo (!empty($dealId))?'display:block; text-align: center;':'display:none'; ?>" id="add-req-sec" class="col-sm-12">
+            <div class="col-sm-6"><a href="<?=ADMIN_WEBROOT?>deals" class="btn btn-info"><i class="fa fa-reply"></i> Back to deal list</a></div>
+            <div class="col-sm-6"><a href="javascript:$('#manage-requirment').toggle();" class="btn btn-info"><i class="fa fa-plus"></i> Add Requirments</a></div>
           </div>
           <div id="manage-requirment" class="col-sm-12">
             <div class="col-sm-12">
@@ -90,34 +96,47 @@
                 echo $this->Form->create('DealItem');
                 echo $this->Form->input('deal_id',array('type'=>'hidden','value'=>$dealId));
                 echo $this->Form->input('category',array('options'=>$categories,'class'=>'form-control col-sm-6','empty'=>'Select Category','title'=>'Please select category','label'=>'Select Category','onchange'=>'getProducts(this.value)','required'=>true));
+                echo $this->Form->input('cat_text',array('class'=>'form-control col-sm-6','label'=>'Category Text','placeholder'=>'Category text'));
 
-                echo '<div id="sizeSec">';
+                echo '<div id="sizeSec" class="clear col-sm-12 ">';
                 $attributes = array(
                     'legend' => false,
                 );
 
-                echo $this->Form->radio('size', $sizes, $attributes);
-                echo '</div>';
-
-                echo '<div id="crustSec">';
+          
                 $i = 1;
-                foreach ($crusts as $key => $value) {
-                    echo $this->Form->input('crust'.$i, array(
+                foreach ($sizes as $key => $value) {
+                    echo $this->Form->input('size.', array(
                       'type'=>'checkbox',
                       'value'=>$key,
                       'label'=>$value,
                       'hiddenField'=>false,
+                      'id'=>'',
+                      'format' => array('before', 'input', 'between', 'label', 'after', 'error' ) 
+                    ) ); 
+                    $i++;
+                }
+
+                echo '</div>';
+
+                echo '<div id="crustSec" class="clear  col-sm-12">';
+                $i = 1;
+                foreach ($crusts as $key => $value) {
+                    echo $this->Form->input('crust.', array(
+                      'type'=>'checkbox',
+                      'value'=>$key,
+                      'label'=>$value,
+                      'hiddenField'=>false,
+                      'id'=>'',
                       'format' => array('before', 'input', 'between', 'label', 'after', 'error' ) 
                     ) ); 
                     $i++;
                 }
                 echo '</div>';  
-                //echo $this->Form->input('curst',array('options'=>$crusts,'class'=>'form-control col-sm-6','label'=>'Select Crust','div'=>array('id'=>'crustSec')));
-
-                echo $this->Form->input('product',array('options'=>array(),'class'=>'form-control col-sm-6','multiple'=>false,'label'=>'Select Product', 'empty'=>'Select Product','div'=>array('id'=>'productSec')));
-                //echo $this->Form->input('modifier',array('options'=>array(),'class'=>'form-control col-sm-6','label'=>'Select Modifier', 'empty'=>'Select Modifier','div'=>array('id'=>'modifierSec')));
+                echo $this->Form->input('product',array('options'=>array(),'class'=>'form-control col-sm-6','multiple'=>true,'label'=>'Select Product', 'empty'=>'Select Product','div'=>array('id'=>'productSec')));
                 echo $this->Form->input('quantity',array('placeholder'=>'Product Quantity','class'=>'form-control col-sm-6'));
-                echo $this->Form->input('price',array('placeholder'=>'Product Price','class'=>'form-control col-sm-6','style'=>'margin-bottom:2%'));
+                echo $this->Form->input('condition',array('label'=>'Select Condition', 'empty'=>'Select Condition','class'=>'form-control col-sm-6','options'=>conditions()));
+                echo $this->Form->input('status', array('label'=>'Status','class'=>'form-control col-sm-6','options'=>ActiveInactive(),'class'=>'form-control')); 
 
                 echo $this->Js->submit(
                   'Add',
@@ -126,8 +145,9 @@
                     'success'=>'addItemResponse(data,textStatus)',
                     'before'=>'return itemValidate()',
                     'complete' => $this->Js->get('#loader')->effect('hide', array('buffer' => false)),
-                    'div'=>false,
-                    'class'=>'btn btn-info'
+                    'div'=>true,
+                    'class'=>'btn btn-info',
+                    'style'=>'margin-top: 3%;'
                   ) 
                 );
 
@@ -234,7 +254,7 @@
         success:function(response){
           var data =  $.parseJSON(response);
           $('#DealItemProduct').html('');
-          $('#DealItemProduct').append($('<option value="">Select Product</option>'));
+          // $('#DealItemProduct').append($('<option value="">Select Product</option>'));
           $.each(data, function(key, value){
             $('#DealItemProduct').append($('<option data-id="'+key+'" value='+Object.keys(value)+'>').text(Object.values(value)));
           });
@@ -318,7 +338,7 @@
           $('.deal_id').val(dealId);
           $('#group-items').html(response);
           $('#manage-requirment').hide();
-          $('#manage-group').show();
+         // $('#manage-group').show();
           $.loadingBlockHide();
         }
 

@@ -65,33 +65,58 @@ class DealsController extends AppController {
                 $this->Session->setFlash(__('Sorry! deal not added.'),'default',array('class'=>'alert alert-danger'));
             }
         }
+        if(isset($dealId)){
+            $this->request->data = $this->Deal->find('first',array('conditions'=>array('id'=>$dealId)));
+        }
         $this->set('pageVar',$pageVar);
         $this->render('admin_add');
     }
 
     public function admin_add_item(){
         $this->layout = $this->autoRender = false;
-        $dataArr = array();
+        $dataArr = $modifierArr = $products = array();
         if(isset($this->request->data)){
             $data = $this->request->data;
-            $categoryId = $data['DealItem']['category'];
+            if(!empty($data['DealItem']['size'])){
+                $sizeArr = $data['DealItem']['size'];
+                foreach ($sizeArr as $key => $value) {
+                    $modifierArr[] = array(
+                        'modifierId'=>1,
+                        'modOptionPlu'=>$value
+                    );     
+                }
+            }
 
-            $size = (isset($data['DealItem']['size']) && $categoryId==1)?$data['DealItem']['size']:null;
-            $crust1 = (isset($data['DealItem']['crust1']) && $categoryId==1)?$data['DealItem']['crust1']:null;
-            $crust2 = (isset($data['DealItem']['crust2']) && $categoryId==1)?$data['DealItem']['crust2']:null;
-            $crust3 = (isset($data['DealItem']['crust3']) && $categoryId==1)?$data['DealItem']['crust3']:null;
+            if(!empty($data['DealItem']['crust'])){
+                $crustArr = $data['DealItem']['crust'];
+                foreach ($crustArr as $key => $value) {
+                    $modifierArr[] = array(
+                        'modifierId'=>2,
+                        'modOptionPlu'=>$value
+                    );     
+                }
+            }
+
+            if(!empty($data['DealItem']['product'])){
+                $products = $data['DealItem']['product'];
+            }
+            
+            $posCount = $this->DealItem->find('count',array('conditions'=>array('DealItem.deal_id'=>$data['DealItem']['deal_id'])));
+
+            $categoryId = $data['DealItem']['category'];
             
             $dataArr['DealItem']['deal_id'] = $data['DealItem']['deal_id'];
             $dataArr['DealItem']['cat_id'] = $data['DealItem']['category'];
-            $dataArr['DealItem']['size'] = $size;
-            $dataArr['DealItem']['crust1'] = $crust1;
-            $dataArr['DealItem']['crust2'] = $crust2;
-            $dataArr['DealItem']['crust3'] = $crust3;
-            $dataArr['DealItem']['product_plu'] = $data['DealItem']['product'];
-            // $dataArr['DealItem']['modifier_plu'] = $data['DealItem']['modifier'];
+            $dataArr['DealItem']['cat_text'] = $data['DealItem']['cat_text'];
+            $dataArr['DealItem']['products'] = implode(',',$products);
+            $dataArr['DealItem']['modifiers'] = json_encode($modifierArr);
             $dataArr['DealItem']['quantity'] = $data['DealItem']['quantity'];
-            $dataArr['DealItem']['price'] = $data['DealItem']['price'];
+            $dataArr['DealItem']['item_count'] = $data['DealItem']['quantity'];
+            $dataArr['DealItem']['item_condition'] = $data['DealItem']['condition'];
+            $dataArr['DealItem']['status'] = $data['DealItem']['status'];
+            $dataArr['DealItem']['pos'] = $posCount;
             
+
             if($this->DealItem->save($dataArr)){
                 echo json_encode(array('success'=>1,'deal_id'=>$data['DealItem']['deal_id']));
             }else{
@@ -104,7 +129,7 @@ class DealsController extends AppController {
     public function getProductList($catId){
         $this->layout = false;
         $this->autoRender = false;
-        $products = $this->Core->getList('Product',array('plu_code','title','id'),array('status'=>1,'category_id'=>$catId));
+        $products = $this->Core->getList('Product',array('id','title','id'),array('status'=>1,'category_id'=>$catId));
         return json_encode($products);
     }
 
