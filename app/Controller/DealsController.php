@@ -294,11 +294,63 @@ class DealsController extends AppController {
         $this->Deal->id = $dealId;
         if($this->Deal->delete()){
             $this->DealItem->deleteAll(array('DealItem.deal_id' => $dealId), false);
-            $this->DealGroup->deleteAll(array('DealGroup.deal_id' => $dealId), false);
-            $this->DealCombination->deleteAll(array('DealCombination.deal_id' => $dealId), false);
-            $this->FinalDeal->deleteAll(array('FinalDeal.deal_id' => $dealId), false);
+            // $this->DealGroup->deleteAll(array('DealGroup.deal_id' => $dealId), false);
+            // $this->DealCombination->deleteAll(array('DealCombination.deal_id' => $dealId), false);
+            // $this->FinalDeal->deleteAll(array('FinalDeal.deal_id' => $dealId), false);
             $this->Session->setFlash(__('Deal deleted successfully.'),'default',array('class'=>'alert alert-success'));
             $this->redirect(array('action' => 'index'));
         }
     }  
+
+    public function admin_edit($dealId=null) {
+        $pageVar['title'] = 'Edit Deal';
+        $pageVar['sub_title'] = 'Edit existing deal';
+        $pageVar['breadcrumb'] = '<li><a href="'.ADMIN_WEBROOT.'"><i class="fa fa-dashboard"></i> Home</a></li><li class="active">Edit Deal</li>';
+        $pageVar['sizes'] = array('999991'=>'Small','999992'=>'Medium','999993'=>'Large');
+        $pageVar['crusts'] = array('I100'=>'Original Crust','I101'=>'Skinny Crust','I102'=>'Glueten Free');
+        $pageVar['categories'] = $this->Core->getList('Category',array('id','name'),array('status'=>1));
+        $pageVar['dealId'] = $dealId;
+
+        $pageVar['dealItems'] = $this->DealItem->find('all',array('conditions'=>array('DealItem.deal_id'=>$dealId)));
+
+        if ($this->request->is('post')) {     
+
+pr($this->request->data); die;
+
+             if(!empty($this->request->data['Deal']['image']) && !empty($this->request->data['Deal']['image']['name'])){
+                $file = explode('.',$this->request->data['Deal']['image']['name']);
+                $file[0] = strtolower($file[0]).time();
+                $file = implode('.',$file);
+                $newPath = 'img/admin/deals/'.$file; 
+                move_uploaded_file($this->request->data['Deal']['image']['tmp_name'], $newPath);
+                $this->request->data['Deal']['image'] = $file;     
+            }else{
+                unset($this->request->data['Deal']['image']);
+            }
+
+            if(!empty($this->request->data['Deal']['thumbnail']) && !empty($this->request->data['Deal']['thumbnail']['name'])){
+                $file = explode('.',$this->request->data['Deal']['thumbnail']['name']);
+                $file[0] = strtolower($file[0]).time();
+                $file = implode('.',$file);
+                $newPath = 'img/admin/deals/'.$file; 
+                move_uploaded_file($this->request->data['Deal']['thumbnail']['tmp_name'], $newPath);
+                $this->request->data['Deal']['thumbnail'] = $file;     
+            }else{
+                unset($this->request->data['Deal']['thumbnail']);
+            }
+
+            $this->request->data['Deal']['store_id'] = $this->Auth->user('user_id');
+            if ($this->Deal->addDeal($this->request->data)) {
+                $dealId = $this->Deal->getLastInsertId();
+                $this->redirect('add/'.$dealId);
+            } else {
+                $this->Session->setFlash(__('Sorry! deal not added.'),'default',array('class'=>'alert alert-danger'));
+            }
+        }
+        if(isset($dealId)){
+            $this->request->data = $this->Deal->find('first',array('conditions'=>array('id'=>$dealId)));
+        }
+        $this->set('pageVar',$pageVar);
+    }
+
 }

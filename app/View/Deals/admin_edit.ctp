@@ -12,9 +12,9 @@
 	<div class="row">
 		<div class="col-xs-12">
 			<div class="box box-primary" style="min-height: 400px;">
-				<?php echo $this->Form->create('Deal',array('type'=>'file','id'=>'AddEditDeal','preventDefault'=>true));?>
+				<?php echo $this->Form->create('Deal',array('type'=>'file','id'=>'AddEditDeal'));?>
         <div class="box-body">
-          <div style="<?php echo (empty($dealId))?'display:block;':'display:none'; ?>" id="add-deal-sec">
+          <div id="add-deal-sec">
           <div class="form-group col-sm-4">
             <div class="col-sm-12">
               <?php echo $this->Form->input('title', array('label'=>'Title','class'=>'form-control','title'=>'Please enter title.','required'=>true,'placeholder'=>'Title')); ?>
@@ -57,59 +57,23 @@
               <?php echo $this->Form->input('description', array('label'=>'Description','class'=>'form-control','title'=>'Please enter description.','required'=>true,'placeholder'=>'Description')); ?>
             </div>
           </div>
-          <div class="form-group col-sm-4">
-            <div class="col-sm-12">
-              <?php  
-              // echo $this->Js->submit(
-              //   'Continue >>',
-              //   array(
-              //     'url'=>array('controller'=>'deals','action'=>'add'),
-              //     'success'=>'dealResponse(data,textStatus)',
-              //     'before'=>'return dealValidate()',
-              //     'complete' => $this->Js->get('#loader')->effect('hide', array('buffer' => false)),
-              //     'div'=>false,
-              //     'class'=>'btn btn-info pull-right',
-              //     'style'=>'float: left !important; margin-top: 8%;',
-              //     'id'=>'addDealSbt'
-              //   ) 
-              // );
-    
-              $options = array(
-                'class'=>'btn btn-info',
-                'disabled'=>(!empty($dealId))?'true':'false',
-              );
-              echo $this->Form->submit('Continue',$options);
-              echo $this->Form->end();
-              // echo $this->Js->writeBuffer();
-              ?>
-              <?php  echo $this->Html->image('loading_medium.gif', array('id'=>'loader')); ?>
-            </div>
-          </div>
+          
         </div>
-          <div style="<?php echo (!empty($dealId))?'display:block; text-align: center;':'display:none'; ?>" id="add-req-sec" class="col-sm-12">
-            <div class="col-sm-6"><a href="<?=ADMIN_WEBROOT?>deals" class="btn btn-info"><i class="fa fa-reply"></i> Back to deal list</a></div>
-            <div class="col-sm-6"><a href="javascript:$('#manage-requirment').toggle(); $('.addItemNotification').hide();" class="btn btn-info"><i class="fa fa-plus"></i> Add Requirments</a></div>
-
-          </div>
-          <div style="margin:15% auto;" class="addItemNotification text-center  clear alert alert-success">
-            <p>Item added ! <i>Want to add more item click on "Add Requirment" OR it done click on "Back to deal list"</i>.</p>
-          </div>
-
-
-          <div id="manage-requirment" class="col-sm-12">
-            <div class="col-sm-12">
+          <?php  //pr($pageVar); ?>
+        <?php 
+          foreach ($pageVar['dealItems'] as $k => $dealI) {
+        ?>
+          <div class="col-sm-12">
               <?php
-                echo $this->Form->create('DealItem');
-                echo $this->Form->input('deal_id',array('type'=>'hidden','value'=>$dealId));
-                echo $this->Form->input('category',array('options'=>$categories,'class'=>'form-control col-sm-6','empty'=>'Select Category','title'=>'Please select category','label'=>'Select Category','onchange'=>'getProducts(this.value)','required'=>true));
-                echo $this->Form->input('cat_text',array('class'=>'form-control col-sm-6','label'=>'Category Text','placeholder'=>'Category text'));
+                echo $this->Form->input('id',array('type'=>'hidden','value'=>$dealI['DealItem']['id']));
+                echo $this->Form->input('category',array('options'=>$categories,'class'=>'form-control col-sm-6','empty'=>'Select Category','selected'=>$dealI['DealItem']['cat_id'],'title'=>'Please select category','label'=>'Select Category','onchange88'=>'getProducts(this.value)','required'=>true));
+                echo $this->Form->input('cat_text',array('class'=>'form-control col-sm-6','label'=>'Category Text','placeholder'=>'Category text','value'=>$dealI['DealItem']['cat_text']));
 
                 echo '<div id="sizeSec" class="clear col-sm-12 ">';
                 $attributes = array(
                     'legend' => false,
                 );
 
-          
                 $i = 1;
                 foreach ($sizes as $key => $value) {
                     echo $this->Form->input('size.', array(
@@ -138,74 +102,33 @@
                     ) ); 
                     $i++;
                 }
-                echo '</div>';  
+                echo '</div>';
+
+                // pr($value);     
                 echo $this->Form->input('product',array('options'=>array(),'class'=>'form-control col-sm-6','multiple'=>true,'label'=>'Select Product', 'empty'=>'Select Product','div'=>array('id'=>'productSec')));
-                echo $this->Form->input('quantity',array('placeholder'=>'Product Quantity','class'=>'form-control col-sm-6'));
-                echo $this->Form->input('condition',array('label'=>'Select Condition', 'empty'=>'Select Condition','class'=>'form-control col-sm-6','options'=>conditions()));
-                echo $this->Form->input('status', array('label'=>'Status','class'=>'form-control col-sm-6','options'=>ActiveInactive(),'class'=>'form-control')); 
-
-                echo $this->Js->submit(
-                  'Add',
-                  array(
-                    'url'=>array('controller'=>'deals','action'=>'add_item'),
-                    'success'=>'addItemResponse(data,textStatus)',
-                    'before'=>'return itemValidate()',
-                    'complete' => $this->Js->get('#loader')->effect('hide', array('buffer' => false)),
-                    'div'=>true,
-                    'class'=>'btn btn-info',
-                    'style'=>'margin-top: 3%;'
-                  ) 
-                );
-
-                echo $this->Form->end();
-                echo $this->Js->writeBuffer();
+                echo $this->Form->input('quantity',array('placeholder'=>'Product Quantity','class'=>'form-control col-sm-6','value'=>$dealI['DealItem']['quantity']));
+                echo $this->Form->input('condition',array('label'=>'Select Condition', 'empty'=>'Select Condition','class'=>'form-control col-sm-6','options'=>conditions(),'selected'=>$dealI['DealItem']['item_condition']));
+                echo $this->Form->input('status', array('label'=>'Status','class'=>'form-control col-sm-6','options'=>ActiveInactive(),'class'=>'form-control','selected'=>$dealI['DealItem']['status'])); 
+              ?>
+            </div>
+          </hr>
+        <?php
+          }
+        ?>
+          
+        <div class="form-group col-sm-4">
+            <div class="col-sm-12">
+              <?php  
+              $options = array(
+                'class'=>'btn btn-info'
+              );
+              echo $this->Form->submit('Continue',$options);
+              echo $this->Form->end();
               ?>
             </div>
           </div>
-          <div id="manage-group" class="col-sm-12">
-            <div class="col-sm-12">
-                <?php echo $this->Form->create('DealGroup'); ?>
-                  <fieldset>
-                    <legend>Make Group:</legend>
-                    <div id="group-items">
-
-                    </div>
-                   </fieldset>
-                <?php 
-                echo $this->Form->input('deal_id',array('type'=>'hidden','class'=>'deal_id'));
-                echo $this->Form->input('condition',array('options'=>conditions()));
-                echo $this->Js->submit(
-                  'Make Group',
-                  array(
-                    'url'=>array('controller'=>'deals','action'=>'make_group'),
-                    'success'=>'makegGroupResponse(data,textStatus)',
-                    'before'=>$this->Js->get('#loader')->effect('show', array('buffer' => false)),
-                    'complete' => $this->Js->get('#loader')->effect('hide', array('buffer' => false)),
-                    'div'=>false,
-                    'disabled'=>true,
-                    'class'=>'btn btn-info'
-                  ) 
-                );
-                echo $this->Js->submit(
-                  'Save Deal',
-                  array(
-                    'url'=>array('controller'=>'deals','action'=>'save_deal'),
-                    'success'=>'saveDealResponse(data,textStatus)',
-                    'before'=>$this->Js->get('#loader')->effect('show', array('buffer' => false)),
-                    'complete' => $this->Js->get('#loader')->effect('hide', array('buffer' => false)),
-                    'div'=>false,
-                    'disabled'=>true,
-                    'class'=>'btn btn-info'
-                  ) 
-                );
-                echo $this->Form->end();
-                echo $this->Js->writeBuffer();
-                ?>
-               
-            </div>
-          </div>
         </div><!-- /.box-body -->
-        <?php echo $this->Form->end();?>
+        <?php // echo $this->Form->end();?>
       </div>
     </div>
   </div>
@@ -232,6 +155,7 @@
     }
 
     function getProducts(catId){
+      alert('fff');
       $('#DealItemProduct, #DealItemSize, #DealItemModifier, #sizeSec, #crustSec').val(''); 
       $('#modifierSec, #sizeSec, #productSec, #crustSec').hide();
       if(catId==1){

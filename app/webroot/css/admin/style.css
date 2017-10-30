@@ -52,3 +52,4 @@ top: -65%;margin-bottom: 1%;}
 #additionFields input[type="radio"] { margin-right: 2%; margin-left: 2%; }
 #loader , #manage-requirment, #add-req-sec, #sizeSec, #productSec, #modifierSec, #manage-group, #crustSec{display: none;}
 #sizeSec input[type="checkbox"], #crustSec input[type="checkbox"]{margin-left: 0px;}
+.addItemNotification{display: none;}
