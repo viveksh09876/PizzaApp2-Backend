@@ -7,7 +7,7 @@ class WebserviceController extends AppController {
     function beforeFilter(){
         parent::beforeFilter();
 		// Configure::write('debug', 2);
-        $this->Auth->allow(array('get_countries','get_categories','getPageInfo','getip','sendApplyInfo','get_languages','get_slides','get_slides_app','get_sub_categories','get_products','get_modifiers','get_options','get_suboptions','getImagePath','get_all_categories_data', 'get_all_categories_data_app','getItemData','placeOrder','getStoreList','getStoresFromPostalCode', 'getStoresFromLatLong','getStoreDetails','login','getTwitterFeeds','getInstagramPost','getCountryStores','saveFavItem','getCitiesSuggestion','getFBFeed','getIGFeed','getPrefrences','signUp', 'getFav', 'getFavItemData','applyCoupon','getFavOrderData','getProfile','sendCateringInfo','sendContactInfo','sendCareerInfo','getOrderHistory','updateProfile','getProductNameByPlu','getModifierName','updatePrefrence','addAddress','deleteAddress','editAddress','setAsDefault','getUserPrefreces','getAreaSuggestion','testUrl', 'getStoreDetailsByStoreId','forgot_password','reset_password','getReOrderData','sendAckEmail','uploadAttachment', 'sendPaymentData', 'getDealData'));
+        $this->Auth->allow(array('get_countries','get_categories','getPageInfo','getip','sendApplyInfo','get_languages','get_slides','get_slides_app','get_sub_categories','get_products','get_modifiers','get_options','get_suboptions','getImagePath','get_all_categories_data', 'get_all_categories_data_app','getItemData','placeOrder','getStoreList','getStoresFromPostalCode', 'getStoresFromLatLong','getStoreDetails','login','getTwitterFeeds','getInstagramPost','getCountryStores','saveFavItem','getCitiesSuggestion','getCitiesSuggestionApp','getFBFeed','getIGFeed','getPrefrences','signUp', 'getFav', 'getFavItemData','applyCoupon','getFavOrderData','getProfile','sendCateringInfo','sendContactInfo','sendCareerInfo','getOrderHistory','updateProfile','getProductNameByPlu','getModifierName','updatePrefrence','addAddress','deleteAddress','editAddress','setAsDefault','getUserPrefreces','getAreaSuggestion','testUrl', 'getStoreDetailsByStoreId','forgot_password','reset_password','getReOrderData','sendAckEmail','uploadAttachment', 'sendPaymentData', 'getDealData'));
     }
 
 	public function get_countries(){
@@ -482,7 +482,7 @@ class WebserviceController extends AppController {
 						$cats[$i]['id'] = $dat['Category']['id'];
 						$cats[$i]['type'] = 'category';
 						$cats[$i]['name'] = $dat['Category']['name'];
-						$cats[$i]['subCats'] = array();
+						$cats[$i]['subCats'] = null;
 						$cats[$i]['products'] = array();
 						$cats[$i]['subCatsName'] = array();
 						$all_categories[] = $dat['Category']['name'];
@@ -609,7 +609,7 @@ class WebserviceController extends AppController {
 					$cats[$i]['type'] = 'deal';
 					$cats[$i]['name'] = $dat['Category']['name'];
 					$cats[$i]['products'] = $alldeals; 
-					$cats[$i]['subCats'] = array();
+					$cats[$i]['subCats'] = null;
 					$cats[$i]['subCatsName'] = array();
 					$all_categories[] = $dat['Category']['name'];
 					//echo '<pre>'; print_r($alldeals); die;
@@ -1502,11 +1502,30 @@ class WebserviceController extends AppController {
 		
 		if(!empty($searchKey)) {
 			$url = "http://gd.geobytes.com/AutoCompleteCity?filter=".$countryCode."&q=".$searchKey;
-			$result     = $this->curlGetRequest($url);
+			$result = $this->curlGetRequest($url);
 		}
 			
 		echo $result; die;
 		
+	}
+
+	public function getCitiesSuggestionApp($searchKey, $countryCode = null) {
+		$this->autoRender = false;
+		$searchCity =  array('Motor City','Dubai Marina', 'Business Bay');
+		$result = array();
+		if(!empty($searchKey)) {
+			$url = "http://gd.geobytes.com/AutoCompleteCity?filter=".$countryCode."&q=".$searchKey;
+			$result = $this->curlGetRequest($url);
+		}
+
+		if($result == '[""]'){
+			foreach ($searchCity as $key => $value) {
+				if(stristr(strtolower($value),$searchKey)) {
+					$result = '["'.$value.', DU, United Arab Emirates"]';
+				}
+			}
+		}
+		echo $result; 
 	}
 	
 	function getFBFeed ($page='nkdpizza'){
