@@ -84,8 +84,10 @@ class StoreController extends AppController {
                     $timeSlotData[$i]['store_id'] = $storeId;
                     $timeSlotData[$i]['from_day']=$timeSlots['from_day'][$i];
                     $timeSlotData[$i]['from_time']=$timeSlots['from_time'][$i];
+                    $timeSlotData[$i]['from_minutes']=$timeSlots['from_minutes'][$i];
                     $timeSlotData[$i]['to_day']=$timeSlots['to_day'][$i];
                     $timeSlotData[$i]['to_time']=$timeSlots['to_time'][$i];
+                    $timeSlotData[$i]['to_minutes']=$timeSlots['to_minutes'][$i];
                 }
                 $this->StoreTime->saveAll($timeSlotData);
 
@@ -179,8 +181,10 @@ class StoreController extends AppController {
                     $timeSlotData[$i]['store_id'] = $id;
                     $timeSlotData[$i]['from_day']=$timeSlots['from_day'][$i];
                     $timeSlotData[$i]['from_time']=$timeSlots['from_time'][$i];
+                    $timeSlotData[$i]['from_minutes']=$timeSlots['from_minutes'][$i];
                     $timeSlotData[$i]['to_day']=$timeSlots['to_day'][$i];
                     $timeSlotData[$i]['to_time']=$timeSlots['to_time'][$i];
+                    $timeSlotData[$i]['to_minutes']=$timeSlots['to_minutes'][$i];
                 }
                 $this->StoreTime->deleteAll(array('StoreTime.store_id'=>$id));
                 $this->StoreTime->saveAll($timeSlotData);

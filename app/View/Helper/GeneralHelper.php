@@ -76,4 +76,9 @@ class GeneralHelper extends Helper {
 		return isset($data['Product']['title'])?$data['Product']['title']:null;
 	}
 
+	public function getProductList($catId){
+		$Model = ClassRegistry::init('Product');
+		return $products = $Model->find('list',array('fields'=>array('id','title'),'conditions'=>array('status'=>1,'category_id'=>$catId)));
+	}
+
 }

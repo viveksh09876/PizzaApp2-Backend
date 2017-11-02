@@ -13,7 +13,7 @@
 		<div class="col-xs-12">
 			<div class="box box-primary" style="min-height: 400px;">
 				<?php echo $this->Form->create('Deal',array('type'=>'file','id'=>'AddEditDeal'));?>
-        <div class="box-body">
+        <div class="box-body editDeal">
           <div id="add-deal-sec">
           <div class="form-group col-sm-4">
             <div class="col-sm-12">
@@ -63,25 +63,45 @@
         <?php 
           foreach ($pageVar['dealItems'] as $k => $dealI) {
         ?>
-          <div class="col-sm-12">
+          <div class="col-sm-12 editDealItem">
+            <div class="col-sm-12 ">
               <?php
-                echo $this->Form->input('id',array('type'=>'hidden','value'=>$dealI['DealItem']['id']));
-                echo $this->Form->input('category',array('options'=>$categories,'class'=>'form-control col-sm-6','empty'=>'Select Category','selected'=>$dealI['DealItem']['cat_id'],'title'=>'Please select category','label'=>'Select Category','onchange88'=>'getProducts(this.value)','required'=>true));
-                echo $this->Form->input('cat_text',array('class'=>'form-control col-sm-6','label'=>'Category Text','placeholder'=>'Category text','value'=>$dealI['DealItem']['cat_text']));
+                $sizeArr = $crustArr = array();
+                $modifiers = json_decode($dealI['DealItem']['modifiers']);
+                // pr($modifiers);
+                foreach ($modifiers as $key => $value) {
+                  if($value->modifierId==1){
+                    array_push($sizeArr, $value->modOptionPlu);
+                  }else{
+                    array_push($crustArr, $value->modOptionPlu);
+                  }
+                }
 
-                echo '<div id="sizeSec" class="clear col-sm-12 ">';
+
+                $dealItemid =  $dealI['DealItem']['id'];
+                echo $this->Form->input('id.',array('type'=>'hidden','value'=>$dealI['DealItem']['id']));
+                echo $this->Form->input('pos.',array('type'=>'hidden','value'=>$dealI['DealItem']['pos']));
+                echo $this->Form->input('category.',array('options'=>$categories,'class'=>'form-control col-sm-6','empty'=>'Select Category','selected'=>$dealI['DealItem']['cat_id'],'title'=>'Please select category','label'=>'Select Category','onchange'=>'getProducts(this.value)','required'=>true));
+                echo $this->Form->input('cat_text.',array('class'=>'form-control col-sm-6','label'=>'Category Text','placeholder'=>'Category text','value'=>$dealI['DealItem']['cat_text']));
+                $catId = $dealI['DealItem']['cat_id'];
+                $isVisible = ($catId==1)?'visible':'hide';
+                $productList = $this->General->getProductList($catId);
+
+                echo '<div class="clear '.$isVisible.' col-sm-12 ">';
                 $attributes = array(
                     'legend' => false,
                 );
 
                 $i = 1;
                 foreach ($sizes as $key => $value) {
-                    echo $this->Form->input('size.', array(
+                    echo $this->Form->input('size', array(
                       'type'=>'checkbox',
+                      'name'=>'data[Deal][size]['.$dealItemid.'][]',
                       'value'=>$key,
                       'label'=>$value,
                       'hiddenField'=>false,
                       'id'=>'',
+                      'checked'=>(in_array($key, $sizeArr))?true:false,
                       'format' => array('before', 'input', 'between', 'label', 'after', 'error' ) 
                     ) ); 
                     $i++;
@@ -89,28 +109,29 @@
 
                 echo '</div>';
 
-                echo '<div id="crustSec" class="clear  col-sm-12">';
+                echo '<div class="clear '.$isVisible.' col-sm-12">';
                 $i = 1;
                 foreach ($crusts as $key => $value) {
-                    echo $this->Form->input('crust.', array(
+                    echo $this->Form->input('crust', array(
                       'type'=>'checkbox',
+                      'name'=>'data[Deal][crust]['.$dealItemid.'][]',
                       'value'=>$key,
                       'label'=>$value,
                       'hiddenField'=>false,
                       'id'=>'',
+                      'checked'=>(in_array($key, $crustArr))?true:false,
                       'format' => array('before', 'input', 'between', 'label', 'after', 'error' ) 
                     ) ); 
                     $i++;
                 }
-                echo '</div>';
-
-                // pr($value);     
-                echo $this->Form->input('product',array('options'=>array(),'class'=>'form-control col-sm-6','multiple'=>true,'label'=>'Select Product', 'empty'=>'Select Product','div'=>array('id'=>'productSec')));
-                echo $this->Form->input('quantity',array('placeholder'=>'Product Quantity','class'=>'form-control col-sm-6','value'=>$dealI['DealItem']['quantity']));
-                echo $this->Form->input('condition',array('label'=>'Select Condition', 'empty'=>'Select Condition','class'=>'form-control col-sm-6','options'=>conditions(),'selected'=>$dealI['DealItem']['item_condition']));
-                echo $this->Form->input('status', array('label'=>'Status','class'=>'form-control col-sm-6','options'=>ActiveInactive(),'class'=>'form-control','selected'=>$dealI['DealItem']['status'])); 
+                echo '</div>';   
+                echo $this->Form->input('product',array('options'=>$productList,'class'=>'form-control col-sm-6','name'=>'data[Deal][product]['.$dealItemid.']','multiple'=>true,'label'=>'Select Product','selected'=>explode(',', $dealI['DealItem']['products'])));
+                echo $this->Form->input('quantity.',array('placeholder'=>'Product Quantity','class'=>'form-control col-sm-6','label'=>'Quantity','value'=>$dealI['DealItem']['quantity']));
+                echo $this->Form->input('condition.',array('label'=>'Select Condition', 'empty'=>'Select Condition','label'=>'Select Condition','class'=>'form-control col-sm-6','options'=>conditions(),'selected'=>$dealI['DealItem']['item_condition']));
+                echo $this->Form->input('statusi.', array('label'=>'Status','class'=>'form-control col-sm-6','options'=>ActiveInactive(),'class'=>'form-control','selected'=>$dealI['DealItem']['status'])); 
               ?>
             </div>
+          </div>
           </hr>
         <?php
           }

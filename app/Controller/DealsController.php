@@ -313,9 +313,9 @@ class DealsController extends AppController {
 
         $pageVar['dealItems'] = $this->DealItem->find('all',array('conditions'=>array('DealItem.deal_id'=>$dealId)));
 
-        if ($this->request->is('post')) {     
-
-pr($this->request->data); die;
+        if (!empty($this->request->data)) {     
+            $dealData = $this->request->data;
+// pr($this->request->data); die;
 
              if(!empty($this->request->data['Deal']['image']) && !empty($this->request->data['Deal']['image']['name'])){
                 $file = explode('.',$this->request->data['Deal']['image']['name']);
@@ -339,10 +339,75 @@ pr($this->request->data); die;
                 unset($this->request->data['Deal']['thumbnail']);
             }
 
-            $this->request->data['Deal']['store_id'] = $this->Auth->user('user_id');
-            if ($this->Deal->addDeal($this->request->data)) {
-                $dealId = $this->Deal->getLastInsertId();
-                $this->redirect('add/'.$dealId);
+            // $this->request->data['Deal']['store_id'] = $this->Auth->user('user_id');
+
+            $dealItemNewData = $dealNewData = array();
+            $dealNewData['Deal'] = array(
+                'title'=>$this->request->data['Deal']['title'],
+                'image_text'=>$this->request->data['Deal']['image_text'],
+                'description'=>$this->request->data['Deal']['description'],
+                'code'=>$this->request->data['Deal']['image_text'],
+                'price'=>$this->request->data['Deal']['price'],
+                'lang_id'=>$this->Session->read('language.id'),
+                'store_id'=>$this->Auth->user('user_id'),
+                'status'=>$this->request->data['Deal']['status'],
+                'modified'=>date('Y-m-d H:i:s'),
+            );
+
+            if(isset($this->request->data['Deal']['image'])){
+                $dealNewData['Deal']['image'] = $this->request->data['Deal']['image'];
+            }
+            if(isset($this->request->data['Deal']['thumbnail'])){
+                $dealNewData['Deal']['thumbnail'] = $this->request->data['Deal']['thumbnail'];
+            }
+
+            // pr($dealNewData);  die;
+
+            foreach ($dealData['Deal']['id'] as $k => $v) {
+                $modifierArr = $sizeArr = $crustArr = array();
+                $pr = (!empty($dealData['Deal']['product'][$v])?implode(',', $dealData['Deal']['product'][$v]):null);
+
+                $sizeArr = (isset($dealData['Deal']['size'][$v]))?$dealData['Deal']['size'][$v]:array();
+                if(!empty($sizeArr)){
+                    foreach ($sizeArr as $key => $value) {
+                        $modifierArr[] = array(
+                            'modifierId'=>1,
+                            'modOptionPlu'=>$value
+                        );     
+                    }
+                }
+
+                $crustArr = (isset($dealData['Deal']['crust'][$v]))?$dealData['Deal']['crust'][$v]:array();
+                if(!empty($crustArr)){
+                    foreach ($crustArr as $key => $value) {
+                        $modifierArr[] = array(
+                            'modifierId'=>2,
+                            'modOptionPlu'=>$value
+                        );     
+                    }
+                }
+
+                $dealItemNewData[$k]['DealItem'] =  array(
+                    'id'=>$v,
+                    'deal_id'=>$dealId,
+                    'cat_id'=>$dealData['Deal']['category'][$k],
+                    'cat_text'=>$dealData['Deal']['cat_text'][$k],
+                    'item_count'=>$dealData['Deal']['quantity'][$k],
+                    'item_condition'=>$dealData['Deal']['condition'][$k],
+                    'pos'=>$dealData['Deal']['pos'][$k],
+                    'products'=>$pr,
+                    'modifiers'=>json_encode($modifierArr),
+                    'quantity'=>$dealData['Deal']['quantity'][$k],
+                    'status'=>$dealData['Deal']['statusi'][$k],
+                );
+            }
+            // pr($dealItemNewData); die;
+
+            $this->Deal->id = $dealId;
+            if ($this->Deal->save($dealNewData)) {
+                $this->DealItem->saveAll($dealItemNewData);
+                $this->Session->setFlash(__('Thanks! deal updated successfully.'),'default',array('class'=>'alert alert-success'));
+                $this->redirect('index');
             } else {
                 $this->Session->setFlash(__('Sorry! deal not added.'),'default',array('class'=>'alert alert-danger'));
             }

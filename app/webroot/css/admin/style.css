@@ -53,3 +53,12 @@ top: -65%;margin-bottom: 1%;}
 #loader , #manage-requirment, #add-req-sec, #sizeSec, #productSec, #modifierSec, #manage-group, #crustSec{display: none;}
 #sizeSec input[type="checkbox"], #crustSec input[type="checkbox"]{margin-left: 0px;}
 .addItemNotification{display: none;}
+.editDealItem{
+  border-bottom: 1px dashed;
+    padding: 2% 15px;
+}
+.editDeal .submit{
+  margin-top: 5%;
+}
+.visible{display: block;}
+.hide{display: none;}

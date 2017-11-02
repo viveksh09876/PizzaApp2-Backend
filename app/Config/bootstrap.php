@@ -185,6 +185,15 @@ function times(){
         '24'=>'12 pm'
     );
 }
+function minutes(){
+    $minutes = array();
+    for($a=0; $a< 6; $a++){ 
+        for($b=0; $b< 10; $b++){
+            array_push($minutes, $a.$b); 
+        }
+    }
+    return $minutes;
+}
 
 function getValidStatus($value){
     if($value){

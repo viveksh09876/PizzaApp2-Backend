@@ -24,6 +24,7 @@
 					<td><?php echo $Deal['Deal']['code']; ?></td>
 					<td><?php echo getActiveInactive($Deal['Deal']['status']); ?></td>
 					<td class="pull-right">
+						<?php echo $this->Html->link(__('Add more requirments', true), array('action' => 'add', $Deal['Deal']['id']),array('class'=>'btn btn-default btn-sm btn-info')); ?>
 						<?php echo $this->Html->link(__('Edit', true), array('action' => 'edit', $Deal['Deal']['id']),array('class'=>'btn btn-default btn-sm btn-primary')); ?>
 						<?php echo $this->Html->link(__('Delete', true), array('action' => 'delete', $Deal['Deal']['id']),array('class'=>'btn btn-default btn-sm btn-danger','onclick'=>'return confirm("Are you sure want to delete?")')); ?>
 					</td>
