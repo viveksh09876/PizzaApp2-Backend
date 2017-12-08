@@ -629,8 +629,12 @@ class WebserviceController extends AppController {
 					foreach ($alldeals as $key => $value) {
 						$value['Deal']['image'] = 'img/admin/products/deals/'.$value['Deal']['image'];
 						$value['Deal']['thumbnail'] = 'img/admin/products/deals/'.$value['Deal']['thumbnail'];
-						$tempData[] = $value['Deal'];
-						$p++;
+						$value['Deal']['price']=array('small' => null,
+                                                                    'medium' => null,
+                                                                    'large' => null,
+                                                                    'freeSize' => $value['Deal']['price']);
+                                                $tempData[] = $value['Deal'];
+                                               $p++;
 					}
 					$alldeals = $tempData;
 
