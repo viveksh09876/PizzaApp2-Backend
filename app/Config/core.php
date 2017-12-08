@@ -127,7 +127,7 @@
  * Turn off all caching application-wide.
  *
  */
-	Configure::write('Cache.disable', true);
+	Configure::write('Cache.disable', false);
 
 /**
  * Enable cache checking.
@@ -318,6 +318,19 @@
  *       Please check the comments in boostrap.php for more info on the cache engines available
  *       and their settings.
  */
+        
+        
+        
+         Cache::config('api_cache', array(
+ 		'engine' => 'File', //[required]
+ 		'duration' => '+4 hours', //[optional]
+ 		'probability' => 100, //[optional]
+  		'path' => CACHE, //[optional] use system tmp directory - remember to use absolute path
+  		'prefix' => 'API_', //[optional]  prefix every cache file with this string
+  		'lock' => false, //[optional]  use file locking
+  		'serialize' => true, 
+ 	));
+ 
 $engine = 'File';
 
 // In development mode, caches should expire quickly.
