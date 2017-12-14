@@ -346,7 +346,7 @@ class DealsController extends AppController {
                 'title'=>$this->request->data['Deal']['title'],
                 'image_text'=>$this->request->data['Deal']['image_text'],
                 'description'=>$this->request->data['Deal']['description'],
-                'code'=>$this->request->data['Deal']['image_text'],
+                'code'=>$this->request->data['Deal']['code'],
                 'price'=>$this->request->data['Deal']['price'],
                 'lang_id'=>$this->Session->read('language.id'),
                 'store_id'=>$this->Auth->user('user_id'),

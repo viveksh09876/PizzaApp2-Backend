@@ -662,7 +662,7 @@ class WebserviceController extends AppController {
 
 
 	public function get_all_categories_data_full($storeId = 1, $menuCountry = 'UK'){
-	   $return=Cache::read('posts','api_cache');
+	   $return=Cache::read('full_data','api_cache');
            if($return !== false){
              echo json_encode($return);
              die;
@@ -884,7 +884,7 @@ class WebserviceController extends AppController {
 		//die;
 		//echo '<pre>'; print_r($cats); die;
          echo json_encode($cats); 
-         Cache::write('posts',$cats,'api_cache');
+         Cache::write('full_data',$cats,'api_cache');
          die;
     }
 	
@@ -3808,6 +3808,10 @@ function sendCareerInfo(){
                 $itemArr[$k]['itemCondition'] = (!empty($item['item_condition'])?$item['item_condition']:null);
                 $itemArr[$k]['pos'] = $item['pos'];
             }    
+
+		  usort($itemArr, function($a, $b) {
+                      return $a['pos'] - $b['pos'];
+                   });
 			$dealArr[$i]['categories']  = $itemArr;
 			$i++;
         }

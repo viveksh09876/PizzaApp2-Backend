@@ -185,6 +185,7 @@ function times(){
         '24'=>'12 pm'
     );
 }
+
 function minutes(){
     $minutes = array();
     for($a=0; $a< 6; $a++){ 

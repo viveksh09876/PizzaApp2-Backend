@@ -128,6 +128,13 @@
  *
  */
 	Configure::write('Cache.disable', false);
+Cache::config('api_cache', array(
+'engine' => 'File', //[required]
+'duration' => '+4 hours', //[optional]
+'path' => CACHE, //[optional] use system tmp directory - remember to use absolute path
+'prefix' => 'API_', //[optional]  prefix every cache file with this string
+'serialize' => true, 
+));
 
 /**
  * Enable cache checking.
@@ -318,19 +325,6 @@
  *       Please check the comments in boostrap.php for more info on the cache engines available
  *       and their settings.
  */
-        
-        
-        
-         Cache::config('api_cache', array(
- 		'engine' => 'File', //[required]
- 		'duration' => '+4 hours', //[optional]
- 		'probability' => 100, //[optional]
-  		'path' => CACHE, //[optional] use system tmp directory - remember to use absolute path
-  		'prefix' => 'API_', //[optional]  prefix every cache file with this string
-  		'lock' => false, //[optional]  use file locking
-  		'serialize' => true, 
- 	));
- 
 $engine = 'File';
 
 // In development mode, caches should expire quickly.
@@ -366,17 +360,17 @@ Cache::config('_cake_model_', array(
 	'duration' => $duration
 ));
 
-define('WEBROOT', FULL_BASE_URL.'/nkdDevUK/');
-define('ADMIN_WEBROOT', FULL_BASE_URL.'/nkdDevUK/admin/');
-define('COMPANY_WEBROOT', FULL_BASE_URL.'/nkdDevUK/company/');
-define('IMG_COMPANY', '/nkdDevUK/img/company/');
-define('IMG_FRONT', '/nkdDevUK/img/frontend/');
-define('IMG_ADMIN', '/nkdDevUK/img/admin/');
-define('IMG', '/nkdDevUK/img/');
-define('SUPPORT_EMAIL', 'narendra.nitm@gmail.com');
-define('CATERING_EMAIL', 'franching@nkdpizza.com');
+define('WEBROOT', FULL_BASE_URL.'/uk/dev/');
+define('ADMIN_WEBROOT', FULL_BASE_URL.'/uk/dev/admin/');
+define('COMPANY_WEBROOT', FULL_BASE_URL.'/uk/dev/company/');
+define('IMG_COMPANY', '/uk/dev/img/company/');
+define('IMG_FRONT', '/uk/dev/img/frontend/');
+define('IMG_ADMIN', '/uk/dev/img/admin/');
+define('IMG', '/uk/dev/img/');
+define('SUPPORT_EMAIL', 'it@kndpizza.com');
+define('CATERING_EMAIL', 'franchising@nkdpizza.com');
 define('CAREER_EMAIL', 'careers@nkdpizza.com');
 define('CONTACT_EMAIL', 'contact@nkdpizza.com');
-define('ENQUIRY_EMAIL', 'franching@nkdpizza.com');
+define('ENQUIRY_EMAIL', 'franchising@nkdpizza.com');
 define('APIURL', 'https://'.$_SERVER['HTTP_HOST'].'/uk/pos');
 define('EMAIL_DELEVERY', 'smtp');	

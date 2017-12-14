@@ -3,7 +3,7 @@
 	<div class="col-md-8 col-md-offset-2">
 		<div class="panel-group">
 			<div class="panel panel-primary">
-				<div class="panel-heading text-center"><h5>WELCOME TO NKD PIZZA</h5></div>
+				<div class="panel-heading text-center"><h5>WELCOME TO UK NKD PIZZA</h5></div>
 				<div class="panel-body language-panel">
 				<?php 
 					echo $this->Form->create('Language');

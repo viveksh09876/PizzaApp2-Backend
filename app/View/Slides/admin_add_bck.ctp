@@ -67,12 +67,12 @@
        <?php echo $this->Form->input('coupon_code', array('label'=>false,'class'=>'form-control','title'=>'Please enter coupon code.')); ?>
      </div>
     </div>
-   <div class="form-group col-sm-6">
+   <!--  <div class="form-group col-sm-6 clear">
       <label class="col-sm-3 control-label" for="inputPassword3">Link </label>
       <div class="col-sm-9">
-       <?php echo $this->Form->input('slide_link', array('label'=>false,'class'=>'form-control','after'=>'(i.e http://www.domainname.com)')); ?>
+       <?php // echo $this->Form->input('slide_link', array('label'=>false,'class'=>'form-control','after'=>'(i.e http://www.demo.com)')); ?>
      </div>
-   </div>
+   </div> -->
    <div class="form-group col-sm-6">
       <label class="col-sm-3 control-label" for="inputPassword3">Status</label>
       <div class="col-sm-9">
