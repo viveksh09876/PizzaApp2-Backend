@@ -47,7 +47,7 @@ top: -65%;margin-bottom: 1%;}
    font-size:15px; 
 }
 #loading_block .text {color: #fff;}
-#optionsDropdown, #addedDropdown {display: none;}
+#optionsDropdown, #addedDropdown,#addedDropdownDD {display: none;}
 .user-menu>a{display: inline-block !important; line-height: 23px !important;}
 #additionFields input[type="radio"] { margin-right: 2%; margin-left: 2%; }
 #loader , #manage-requirment, #add-req-sec, #sizeSec, #productSec, #modifierSec, #manage-group, #crustSec{display: none;}

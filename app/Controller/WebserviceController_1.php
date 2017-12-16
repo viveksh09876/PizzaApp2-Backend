@@ -8,7 +8,7 @@ class WebserviceController extends AppController {
         parent::beforeFilter();
 		// Configure::write('debug', 2);
 	header("Access-Control-Allow-Origin: http://piecechicago.raam360.com");
-        $this->Auth->allow(array('get_countries','get_categories','getPageInfo','getip','sendApplyInfo','get_languages','get_slides','get_slides_app','get_sub_categories','get_products','get_modifiers','get_options','get_suboptions','getImagePath','get_all_categories_data', 'get_all_categories_data_app','getItemData','getItemDataApp','placeOrder','getStoreList','getStoresFromPostalCode', 'getStoresFromLatLong','getStoreDetails','login','getTwitterFeeds','getInstagramPost','getCountryStores','saveFavItem','getCitiesSuggestion','getCitiesSuggestionApp','getFBFeed','getIGFeed','getPrefrences','signUp', 'getFav', 'getFavItemData','applyCoupon','getFavOrderData','getProfile','sendCateringInfo','sendContactInfo','sendCareerInfo','getOrderHistory','updateProfile','getProductNameByPlu','getModifierName','updatePrefrence','addAddress','deleteAddress','editAddress','setAsDefault','getUserPrefreces','getAreaSuggestion','testUrl', 'getStoreDetailsByStoreId','forgot_password','reset_password','getReOrderData','sendAckEmail','uploadAttachment', 'sendPaymentData', 'getDealItemList','getCategoryData','getDealIdFromCode','get_all_categories_data_full', 'getVoucherBalance','get_all_categories_data_fullmenu'));
+        $this->Auth->allow(array('get_countries','get_categories','getPageInfo','getip','sendApplyInfo','get_languages','get_slides','get_slides_app','get_sub_categories','get_products','get_modifiers','get_options','get_suboptions','getImagePath','get_all_categories_data', 'get_all_categories_data_app','getItemData','getItemDataApp','placeOrder','getStoreList','getStoresFromPostalCode', 'getStoresFromLatLong','getStoreDetails','login','getTwitterFeeds','getInstagramPost','getCountryStores','saveFavItem','getCitiesSuggestion','getCitiesSuggestionApp','getFBFeed','getIGFeed','getPrefrences','signUp', 'getFav', 'getFavItemData','applyCoupon','getFavOrderData','getProfile','sendCateringInfo','sendContactInfo','sendCareerInfo','getOrderHistory','updateProfile','getProductNameByPlu','getModifierName','updatePrefrence','addAddress','deleteAddress','editAddress','setAsDefault','getUserPrefreces','getAreaSuggestion','testUrl', 'getStoreDetailsByStoreId','forgot_password','reset_password','getReOrderData','sendAckEmail','uploadAttachment', 'sendPaymentData', 'getDealItemList','getCategoryData','getDealIdFromCode','get_all_categories_data_full', 'getVoucherBalance'));
     }
 
 	public function get_countries(){
@@ -662,7 +662,7 @@ class WebserviceController extends AppController {
 
 
 	public function get_all_categories_data_full($storeId = 1, $menuCountry = 'UK'){
-	   $return=false;//Cache::read('full_data','api_cache');
+	   $return=Cache::read('full_data','api_cache');
            if($return !== false){
              echo json_encode($return);
              die;
@@ -3794,8 +3794,6 @@ function sendCareerInfo(){
             $dealArr[$i]['overallPrice'] = $value['Deal']['price'];
             $dealArr[$i]['listImage'] = 'img/admin/products/deals/'.$value['Deal']['thumbnail'];
             $dealArr[$i]['detailImage'] = 'img/admin/products/deals/'.$value['Deal']['image'];
-            $dealArr[$i]['allow_order_type'] = $value['Deal']['allow_order_type'];
-            $dealArr[$i]['allow_days'] = $value['Deal']['allow_days'];
 
             foreach ($value['DealItem'] as $k => $item) {
                 $itemArr[$k]['id'] = $item['cat_id'];
@@ -3847,263 +3845,6 @@ function sendCareerInfo(){
 		echo json_encode($result);
 	    die;
 	}
-        
-      public function get_all_categories_data_fullmenu($storeId = 1, $menuCountry = 'UK'){
-	   $return=false;//Cache::read('full_data','api_cache');
-           if($return !== false){
-             echo json_encode($return);
-             die;
-           }	
-		//Configure::write('debug', 2);
-        $this->layout = FALSE;
-        $this->autoRender = FALSE;
-		$this->Category->recursive = 2;
-		
-		$this->Category->bindModel(array('hasMany'=>array(
-								'Product' => array(
-										'conditions' => array('Product.status' => 1, 'Product.lang_id !=' => 0),
-										'fields' => array(
-														'Product.id', 'Product.lang_id','Product.category_id',
-														'Product.sub_category_id', 'Product.short_description', 'Product.plu_code',
-														'Product.title', 'Product.price_title', 'Product.slug','Product.price','Product.image',
-														'Product.thumb_image','Product.sort_order','groupv','grouph','groupvh','dd_default_selection','dd_group_id'
-														
-												),
-										'order' => array('Product.sort_order' => 'asc')		
-								)
-						)));
-						
-		$this->Product->bindModel(array(
-									'belongsTo' => array(
-										'SubCategory' => array(
-											'ClassName' => 'SubCategory',
-											'foreignKey' => 'sub_category_id',
-											'conditions' => array('SubCategory.status' => 1),
-											'fields' => array(
-													'SubCategory.id','SubCategory.lang_id','SubCategory.store_id','SubCategory.cat_id','SubCategory.name','SubCategory.slug','SubCategory.short_description','SubCategory.sort_order','SubCategory.image','SubCategory.status'
-												),
-											'order' => array('SubCategory.sort_order' => 'asc')	
-										)
-									),
-									'hasMany' => array(
-										'ProductModifier' => array(
-											'className' => 'ProductModifier',
-											'foreignKey' => 'product_id',
-											'fields' => array('ProductModifier.id')
-										)
-									)
-								));
-        
-		
-									
-		$data = $this->Category->find('all', array('conditions' => array(
-														'Category.status' => 1,
-														'Category.lang_id' => $storeId)
-												));
-		
-		//echo '<pre>'; print_r($data); die;
-		//$plu_json = $this->curlGetRequest('https://nkdpizza.com/beta/pos/index.php/menu/'.$menuCountry);
-		
-		$plu_json = $this->curlGetRequest(APIURL.'/index.php/menu/UK');
-		$plu_json = json_decode($plu_json, true);
-		//echo '<pre>'; print_r($plu_json); die;
-		$plu_mods = $plu_json['modifier'];
-		$plu_json = $plu_json['item'];
-		$resp = array();
-		$all_categories = $cats = $subCats = array();
-		
-		if(!empty($data)){
-			$i = 0;
-			foreach($data as $dat) {
-				
-				if ($dat['Category']['slug'] != 'meal-deals') {
-					if(!in_array($dat['Category']['name'], $all_categories)) {
-						$cats[$i]['id'] = $dat['Category']['id'];
-						$cats[$i]['type'] = 'category';
-						$cats[$i]['name'] = $dat['Category']['name'];
-						$cats[$i]['subCats'] = array();
-						$cats[$i]['products'] = array();
-						$cats[$i]['subCatsName'] = array();
-						$all_categories[] = $dat['Category']['name'];
-					}
-					
-					
-					if(!empty($dat['Product'])) {
-						$j = 0; $count = array();
-						foreach($dat['Product'] as $prod) {
-							
-							$prod['is_price_mapped'] = 0;
-							$prod['mod_count'] = count($prod['ProductModifier']);
-							
-							
-							unset($prod['ProductModifier']);
-							
-							//map price of product using plu code
-							if(!empty($plu_json)) {
-								foreach($plu_json as $pluData) {
-									
-									if (isset($pluData['CYO'])) {
-										$crustData = $pluData['CYO'];
-										$r = 0;
-										foreach($crustData as $cd) {
-											unset($crustData[$r]['Contents']);
-											$r++;
-										}
-									}
-									
-									foreach($pluData as $key => $pdat) {
-										//echo '<pre>'; print_r($key); 
-										if($dat['Category']['id'] == '1' || $dat['Category']['id'] == '8') {
-											
-											
-											$prod['crust_price'] = $crustData;
-											$prod['dd_default_selection']='I100-999993';
-											
-											
-											if($prod['plu_code'] == 999999) {
-												$prod['is_price_mapped'] = 1;
-												$prod['price'] = $prod['price_title'];	
-												
-											}else{
-												
-												if(is_array($pdat)) {
-													foreach($pdat as $pz) {
-														if(isset($pz['PLU'])) {
-															if($prod['plu_code'] == $pz['PLU']) {
-																$prod['is_price_mapped'] = 1;
-
-																if ($prod['plu_code'] == '289' || $prod['plu_code'] == '290'|| $prod['plu_code'] == '302'|| $prod['plu_code'] == '303') {
-																	$prod['price'] = '£'.$pz['PriceSm'];
-																} else {
-																	$prod['price'] = array(
-																		'small' => $pz['PriceSm'],
-																		'medium' => $pz['PriceMed'],
-																		'large' => $pz['PriceLg']
-																	);
-																}
-																
-															}	
-														}
-													}
-												}
-												
-											}
-											
-											
-										}else{
-											if(isset($pdat['PLU'])) {
-                                                                                            $selection=null;
-                                                                                            if(isset($prod['dd_group_id'])){
-                                                                                               $dropDown_PluCode=$this->getPluCodeByGroupID($prod['dd_group_id']);
-                                                                                               $prod['dd_default_selection']= isset($dropDown_PluCode[$prod['dd_default_selection']])?$dropDown_PluCode[$prod['dd_default_selection']]:null;
-                                                                                               $prod['dipping_sauce_data'] =$dropDown_PluCode?$this->getModifierForDD($plu_mods,$dropDown_PluCode):array();
-                                                                                               unset($prod['dd_group_id']);
-                                                                                            }
-                                                                                            
-											       if($prod['plu_code'] == $pdat['PLU']) {
-													
-													$prod['is_price_mapped'] = 1;
-													$prod['price'] = '£'.$pdat['Price'];
-												}	
-											}
-										}									
-									}								
-								}
-							}
-							
-							//echo '<pre>'; print_r($prod); die;
-							if(!empty($prod['sub_category_id'])){
-								
-								if(!in_array($prod['SubCategory']['name'], $cats[$i]['subCatsName'])) {
-									$cats[$i]['subCatsName'][] = $prod['SubCategory']['name'];
-									$cats[$i]['subCatsPrice'][] = $prod['SubCategory']['short_description'];
-								}
-								
-								
-								if(!isset($count[$prod['SubCategory']['name']])) {
-									$count[$prod['SubCategory']['name']] = 0;
-								}
-								
-								$sName = $prod['SubCategory'];
-								unset($prod['SubCategory']);
-								unset($prod['created']);
-								unset($prod['modified']);
-								
-								$cats[$i]['subCats'][$sName['name']][$count[$sName['name']]]['name'] = $sName['name'];
-								$cats[$i]['subCats'][$sName['name']][$count[$sName['name']]]['products'][] = $prod;
-								
-								$count[$sName['name']] +=1;
-							}else{
-								$cats[$i]['products'][] = $prod;
-							}
-							
-							$j++;
-						}
-					}
-
-				} else {
-					//meal deals
-
-					// $this->Deal->bindModel(array(
-					// 	'hasMany' => array(
-					// 		'DealItem' => array(
-					// 			'className' => 'DealItem',
-					// 			'foreignKey' => 'deal_id'
-					// 		)
-					// 	)
-					// ));
-
-
-					$alldeals = $this->Deal->find('all', array('conditions' => array(
-											'Deal.status' => 1,
-											'Deal.store_id' => $storeId
-										)));
-					
-					$cats[$i]['id'] = $dat['Category']['id'];
-					$cats[$i]['type'] = 'deal';
-					$cats[$i]['name'] = $dat['Category']['name'];
-					$cats[$i]['products'] = $alldeals; 
-					$cats[$i]['subCats'] = array();
-					$cats[$i]['subCatsName'] = array();
-					$all_categories[] = $dat['Category']['name'];
-					//echo '<pre>'; print_r($alldeals); die;
-				}
-				
-				
-				$i++;			
-			}
-		}
-			
-		
-		//die;
-		//echo '<pre>'; print_r($cats); die;
-         echo json_encode($cats); 
-         Cache::write('full_data',$cats,'api_cache');
-         die;
-    }
-
-        public function getPluCodeByGroupID($group_id){
-          $optionIds = $this->Core->getList('ModifierOption',array('id','option_id'),array('ModifierOption.modifier_id'=>$group_id));
-          $optionList = $this->Core->getList('Option',array('id','plu_code'),array('Option.id'=>array_values($optionIds),'Option.status'=>1));
-          return $optionList;
-        }
-        
-        public function getModifierForDD($Modifier,$plu_code){
-            $return=array();
-            if(is_array($Modifier) && is_array($plu_code)){
-            foreach($plu_code as $plu){
-                foreach($Modifier as $mod){
-                    foreach($mod as $mod1){
-                        if($mod1['PLU']==$plu)
-                        $return[]=$mod1;
-                    }
-                }
-            }
-            }
-            return $return;
-        }
-
-
 
 	
 }
