@@ -2,8 +2,8 @@
   <section class="sidebar">
     <ul class="sidebar-menu">
       <li class="header"><i class="fa fa-angle-double-right"></i> ADMIN PANEL</li>
-      <li class="<?php echo (strtolower($this->params->controller)=='home')?'active':'';?> treeview">
-        <a href="<?=ADMIN_WEBROOT?>home">
+      <li class="<?php echo (strtolower($this->params->controller)=='reports')?'active':'';?> treeview">
+        <a href="<?=ADMIN_WEBROOT?>reports">
           <i class="fa fa-dashboard"></i> <span>Dashboard</span>
         </a>
       </li>

@@ -128,7 +128,16 @@
   <div class="col-sm-9">
     <?php echo $this->Form->input('added_modifier',array('options'=>array(),'label'=>false,'class'=>'form-control','multiple'=>true,'onchange'=>'getAdditionalInfo(this)')); ?>
  </div>
+ </div>
+<div class="form-group col-sm-12" id="addedDropdownDD">
+<div class="col-sm-9">
+    <strong class="editLabel">Dropdown Modifiers : </strong>
+    <br><small>(for menu page dropdown)</small>
+    <?php echo $this->Form->input('dd_group_id',array('options'=>array(),'label'=>false,'class'=>'form-control')); ?>
+ </div>
 </div>
+
+
 <div class="form-group col-sm-12" id="additionFields"></div>
 </div><!-- /.box-body -->
 <div class="box-footer">
@@ -141,6 +150,7 @@
 </section>
 
 <script type="text/javascript">
+default_dd="<?php echo isset($this->request->data["Product"]['dd_group_id'])?$this->request->data["Product"]['dd_group_id']:0;?>";
 $(document).ready(function(){
     $('.editLabel').hide();
     var isEdit = '<?php echo (!empty($this->request->data["Product"]["id"]))?$this->request->data["Product"]["id"]:0; ?>';
@@ -218,12 +228,15 @@ function getIncludedModifier(){
           alreadySet = $.parseJSON(alreadySet);
 
          // $('#ProductAddedModifier').html('<option value="">Select Modifiers</options>');
-          
+          $('#ProductDdGroupId').append($("<option value=''>").text('Select Menu Dropdown'));
           $.each(data, function(key, value){
             var isExist = $.inArray(key, alreadySet);
             var selected = (isExist!=-1)?'selected=selected':'';
             $('#ProductAddedModifier').append($('<option '+selected+' value='+key+'>').text(value));
-            
+            if(selected!=''){
+             selected=(key==default_dd)?'selected':'';
+             $('#ProductDdGroupId').append($('<option '+selected+' value='+key+'>').text(value));
+            }
             if(isEdit>0){                
                 var PostUrl = '<?php echo WEBROOT ?>modifier/get_addtional_info';
                 $.ajax({
@@ -252,6 +265,7 @@ function getIncludedModifier(){
                 });
             }
             $('#addedDropdown').show();
+             $('#addedDropdownDD').show();
             $('#ProductAddedModifier').show();
           });
          $.loadingBlockHide();
@@ -263,6 +277,16 @@ function getIncludedModifier(){
   function getAdditionalInfo(obj){
     var isEdit = '<?php echo (!empty($this->request->data["Product"]["id"]))?$this->request->data["Product"]["id"]:0; ?>';
     var ModifierId = $(obj).val();
+    
+    $('#ProductDdGroupId option').remove();
+    $('#ProductDdGroupId').append($("<option value=''>").text('Select Menu Dropdown'));
+    $("#ProductAddedModifier option:selected").each(function () {
+       var $this = $(this);
+       if ($this.length) {
+        $('#ProductDdGroupId').append($('<option  value='+$this.val()+'>').text($this.text()));
+       }
+    });
+   
     if(ModifierId=='' || ModifierId==null){
       $('#additionFields').html('');
       return false;
@@ -334,4 +358,5 @@ function getIncludedModifier(){
         }
       });
   }
+   
 </script>

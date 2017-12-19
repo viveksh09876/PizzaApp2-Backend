@@ -52,6 +52,16 @@
               <?php echo $this->Form->input('status', array('label'=>'Status','options'=>ActiveInactive(),'class'=>'form-control')); ?>
             </div>
           </div>
+          <div class="form-group col-sm-4">
+            <div class="col-sm-12">
+              <?php echo $this->Form->input('allow_days', array('label'=>'Select days for deal','options'=>$allowDays,'class'=>'form-control','multiple'=>true)); ?>
+            </div>
+          </div>
+         <div class="form-group col-sm-4">
+            <div class="col-sm-12">
+              <?php echo $this->Form->input('allow_order_type', array('label'=>'Order Type for deal ','options'=>$allowType,'class'=>'form-control')); ?>
+            </div>
+          </div>
           <div class="form-group col-sm-12">
             <div class="col-sm-12">
               <?php echo $this->Form->input('description', array('label'=>'Description','class'=>'form-control','title'=>'Please enter description.','required'=>true,'placeholder'=>'Description')); ?>

@@ -18,7 +18,7 @@ class HomeController extends AppController {
 			$id = $this->request->data['Language']['id'];
 			$data = $this->Core->getRecord('Language',array('id','name'),array('id'=>$id));
 			$this->Session->write('language',$data['Language']);
-			$this->redirect('index');
+			$this->redirect(array('controller'=>'reports','action'=>'index'));
 		}
 		$this->set('pageVar',$pageVar);
 	}

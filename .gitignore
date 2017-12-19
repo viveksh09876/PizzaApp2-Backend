@@ -8,6 +8,8 @@
 /build
 /dist
 /tags
+/app/webroot/img/
+/app/webroot/attachments
 
 # OS generated files #
 ######################

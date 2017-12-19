@@ -4,7 +4,9 @@ class DealsController extends AppController {
     public $components=array('Core','Email');
     public $uses = array('EmailTemplate','Deal','ProductModifier','DealItem','DealGroup','DealCombination','FinalDeal');
     public $helders = array('Ajax','General');
-
+    public $allowDays=array(0=>'Select Deal Days',1=>'Sunday',2=>'Monday',3=>'Tuesday',4=>'Wednesday',5=>'Thursday',6=>'Friday',7=>'Saturday');
+    public $allowType=array(0=>'Select Order Type','delivery'=>'Delivery','pickup'=>'Pickup');
+    
     function beforeFilter(){
         parent::beforeFilter();
         $this->Auth->allow(array(''));
@@ -33,7 +35,9 @@ class DealsController extends AppController {
         $pageVar['crusts'] = array('I100'=>'Original Crust','I101'=>'Skinny Crust','I102'=>'Glueten Free');
         $pageVar['categories'] = $this->Core->getList('Category',array('id','name'),array('status'=>1));
         $pageVar['dealId'] = $dealId;
-
+        $pageVar['allowDays'] = $this->allowDays;
+        $pageVar['allowType'] = $this->allowType;
+        
         if ($this->request->is('post')) {           
              if(!empty($this->request->data['Deal']['image']) && !empty($this->request->data['Deal']['image']['name'])){
                 $file = explode('.',$this->request->data['Deal']['image']['name']);
@@ -58,6 +62,7 @@ class DealsController extends AppController {
             }
 
             $this->request->data['Deal']['store_id'] = $this->Auth->user('user_id');
+            $this->request->data['Deal']['allow_days']= implode(',', $this->request->data['Deal']['allow_days']);
             if ($this->Deal->addDeal($this->request->data)) {
                 $dealId = $this->Deal->getLastInsertId();
                 $this->redirect('add/'.$dealId);
@@ -310,7 +315,8 @@ class DealsController extends AppController {
         $pageVar['crusts'] = array('I100'=>'Original Crust','I101'=>'Skinny Crust','I102'=>'Glueten Free');
         $pageVar['categories'] = $this->Core->getList('Category',array('id','name'),array('status'=>1));
         $pageVar['dealId'] = $dealId;
-
+        $pageVar['allowDays'] = $this->allowDays;
+        $pageVar['allowType'] = $this->allowType;
         $pageVar['dealItems'] = $this->DealItem->find('all',array('conditions'=>array('DealItem.deal_id'=>$dealId)));
 
         if (!empty($this->request->data)) {     
@@ -342,16 +348,20 @@ class DealsController extends AppController {
             // $this->request->data['Deal']['store_id'] = $this->Auth->user('user_id');
 
             $dealItemNewData = $dealNewData = array();
+            $this->request->data['Deal']['allow_days']= implode(',', $this->request->data['Deal']['allow_days']);
             $dealNewData['Deal'] = array(
                 'title'=>$this->request->data['Deal']['title'],
                 'image_text'=>$this->request->data['Deal']['image_text'],
                 'description'=>$this->request->data['Deal']['description'],
-                'code'=>$this->request->data['Deal']['image_text'],
+                'code'=>$this->request->data['Deal']['code'],
                 'price'=>$this->request->data['Deal']['price'],
                 'lang_id'=>$this->Session->read('language.id'),
                 'store_id'=>$this->Auth->user('user_id'),
                 'status'=>$this->request->data['Deal']['status'],
                 'modified'=>date('Y-m-d H:i:s'),
+                'allow_days'=>$this->request->data['Deal']['allow_days'],
+                'allow_order_type'=>$this->request->data['Deal']['allow_order_type'],
+
             );
 
             if(isset($this->request->data['Deal']['image'])){
@@ -414,6 +424,7 @@ class DealsController extends AppController {
         }
         if(isset($dealId)){
             $this->request->data = $this->Deal->find('first',array('conditions'=>array('id'=>$dealId)));
+            $this->request->data['Deal']['allow_days']=isset($this->request->data['Deal']['allow_days'])?explode(',',$this->request->data['Deal']['allow_days']):0;
         }
         $this->set('pageVar',$pageVar);
     }
