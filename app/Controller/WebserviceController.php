@@ -8,7 +8,7 @@ class WebserviceController extends AppController {
         parent::beforeFilter();
 		// Configure::write('debug', 2);
 	header("Access-Control-Allow-Origin: http://piecechicago.raam360.com");
-        $this->Auth->allow(array('get_countries','get_categories','getPageInfo','getip','sendApplyInfo','get_languages','get_slides','get_slides_app','get_sub_categories','get_products','get_modifiers','get_options','get_suboptions','getImagePath','get_all_categories_data', 'get_all_categories_data_app','getItemData','getItemDataApp','placeOrder','getStoreList','getStoresFromPostalCode', 'getStoresFromLatLong','getStoreDetails','login','getTwitterFeeds','getInstagramPost','getCountryStores','saveFavItem','getCitiesSuggestion','getCitiesSuggestionApp','getFBFeed','getIGFeed','getPrefrences','signUp', 'getFav', 'getFavItemData','applyCoupon','getFavOrderData','getProfile','sendCateringInfo','sendContactInfo','sendCareerInfo','getOrderHistory','updateProfile','getProductNameByPlu','getModifierName','updatePrefrence','addAddress','deleteAddress','editAddress','setAsDefault','getUserPrefreces','getAreaSuggestion','testUrl', 'getStoreDetailsByStoreId','forgot_password','reset_password','getReOrderData','sendAckEmail','uploadAttachment', 'sendPaymentData', 'getDealItemList','getCategoryData','getDealIdFromCode','get_all_categories_data_full', 'getVoucherBalance','get_all_categories_data_fullmenu'));
+        $this->Auth->allow(array('get_countries','get_categories','getPageInfo','getip','sendApplyInfo','get_languages','get_slides','get_slides_app','get_sub_categories','get_products','get_modifiers','get_options','get_suboptions','getImagePath','get_all_categories_data', 'get_all_categories_data_app','getItemData','getItemDataApp','placeOrder','getStoreList','getStoresFromPostalCode', 'getStoresFromLatLong','getStoreDetails','login','getTwitterFeeds','getInstagramPost','getCountryStores','saveFavItem','getCitiesSuggestion','getCitiesSuggestionApp','getFBFeed','getIGFeed','getPrefrences','signUp', 'getFav', 'getFavItemData','applyCoupon','getFavOrderData','getProfile','sendCateringInfo','sendContactInfo','sendCareerInfo','getOrderHistory','updateProfile','getProductNameByPlu','getModifierName','updatePrefrence','addAddress','deleteAddress','editAddress','setAsDefault','getUserPrefreces','getAreaSuggestion','testUrl', 'getStoreDetailsByStoreId','forgot_password','reset_password','getReOrderData','sendAckEmail','uploadAttachment', 'sendPaymentData', 'getDealItemList','getCategoryData','getDealIdFromCode','get_all_categories_data_full', 'getVoucherBalance','get_all_categories_data_fullmenu','getSuggestedProductsApp','getStores'));
     }
 
 	public function get_countries(){
@@ -1866,10 +1866,11 @@ class WebserviceController extends AppController {
 	
 	
 	public function getStoresFromPostalCode($code) {
-		
+		//Configure::write('debug', 2);
+		//echo $code;
 		if($code != '') {
 			
-			$url = 'http://maps.googleapis.com/maps/api/geocode/json?address='.$code;			
+			$url = 'https://maps.googleapis.com/maps/api/geocode/json?address='.$code.'&key=AIzaSyCkESMKdW4fPiX7BnL5gQnv_o3tTUOcZQ0';			
 			$result     = $this->curlGetRequest($url);
 			$response   = json_decode($result, true);
 			$stores = array();
@@ -1885,13 +1886,14 @@ class WebserviceController extends AppController {
 				}
 
 
-				//$city = strtolower($response['results'][0]['address_components'][1]['long_name']);
-				
+				$city = strtolower($response['results'][0]['address_components'][1]['long_name']);
+				//echo city;
 				$stores = $this->Store->find('all', array(							
 								'conditions' => array(
 									'OR' => array(
-										'LOWER(Store.city)' => $city,
-										'LOWER(Store.state)' => $city
+										'LOWER(Store.store_address) LIKE' => '%'.$city.'%',
+										'LOWER(Store.city) LIKE' => '%'.$city.'%',
+										'LOWER(Store.state) LIKE' => '%'.$city.'%'
 									),
 									'Store.status' => 1	
 								),
@@ -2312,7 +2314,7 @@ class WebserviceController extends AppController {
     }
 
     if($this->sendPhpEmail(CATERING_EMAIL,$from,$subject,$content)){
-    	$this->sendAckEmail($email,$username);
+    	$this->sendAckEmail($email,$username,'catering_notification_reply');
 		echo json_encode(array('show'=>true, 'isSuccess'=>true, 'message'=>'Thank you for your enquiry about your event - we’ll be in touch really soon to talk about how we can help!'));
 	}else{
 		echo json_encode(array('show'=>true, 'isSuccess'=>false, 'message'=>'Sorry ! mail not send, please try again.'));
@@ -2394,7 +2396,7 @@ class WebserviceController extends AppController {
         $content=str_replace($arrFind, $arrReplace,$template['EmailTemplate']['email_body']);
     }
     if($this->sendPhpEmail(ENQUIRY_EMAIL,$from,$subject,$content)){
-    	$this->sendAckEmail($email,$name);
+    	$this->sendAckEmail($email,$name,'franchise_enquiry_reply');
 			echo json_encode(array('show'=>true, 'isSuccess'=>true, 'message'=>'Thank You ! you information has been sent successfully will contact you soon.'));
 		}else{
     	echo json_encode(array('show'=>true, 'isSuccess'=>false, 'message'=>'Sorry ! mail not send, please try again.'));
@@ -2436,7 +2438,7 @@ function sendCareerInfo(){
     }
 
     if($this->sendPhpEmail(CAREER_EMAIL,$from,$subject,$content)){
-    	$this->sendAckEmail($email,$name);
+    	$this->sendAckEmail($email,$name,'career_notification_reply');
 			echo json_encode(array('show'=>true, 'isSuccess'=>true, 'message'=>'Thank You ! information has been sent successfully, will contact you soon.'));
 		}else{
     	echo json_encode(array('show'=>true, 'isSuccess'=>false, 'message'=>'Sorry ! mail not send, please try again.'));
@@ -3259,15 +3261,24 @@ function sendCareerInfo(){
 		echo $result;
 	}
 	
-	function sendAckEmail($emailId,$username){
+	function sendAckEmail($emailId,$username,$template='user_acknowledgement'){
 		$ackTemplate = $this->EmailTemplate->find('first',array(
+	            'conditions' => array(
+	                'template_key'=> $template,
+	                'template_status' =>'Active'
+	            )
+	        )
+	    );
+            if(empty($ackTemplate)){
+               $ackTemplate = $this->EmailTemplate->find('first',array(
 	            'conditions' => array(
 	                'template_key'=> 'user_acknowledgement',
 	                'template_status' =>'Active'
 	            )
 	        )
-	    );
-	    if($ackTemplate){ 
+	       ); 
+            }    
+            if($ackTemplate){ 
 	    	$arrFind=array('{name}');
 	    	$arrReplace=array($username);
 	    	$from=$ackTemplate['EmailTemplate']['from_email'];
@@ -4103,7 +4114,229 @@ function sendCareerInfo(){
             return $return;
         }
 
+function getSuggestedProductsApp($storeId=1){
+		
+		//Configure::write('debug', 2);
+        $this->layout = FALSE;
+        $this->autoRender = FALSE;
+		$this->Category->recursive = 2;
+		if($this->request->data('catsId')){
+			$cats=$this->request->data('catsId');
+		}else if($this->request->input ( 'json_decode', true)){
+			$cats=$this->request->input ( 'json_decode', true);
+			$cats=$cats['catsId'];
+		}
+		$cats=explode(',',$cats);
+		if (empty($cats[0])) {
+            $cats[0] = 1;
+			$cats[1] = 7;
+        } else {
+            array_push($cats, 1);
+			array_push($cats, 7);
+        }
+		//pr($cats);//die;
+		$this->Category->bindModel(array('hasMany'=>array(
+								'Product' => array(
+										'conditions' => array('Product.status' => 1, 'Product.lang_id !=' => 0),
+										'fields' => array(
+														'Product.id', 'Product.lang_id','Product.category_id',
+														'Product.sub_category_id', 'Product.short_description', 'Product.plu_code',
+														'Product.title', 'Product.price_title', 'Product.slug','Product.price','Product.image',
+														'Product.thumb_image','Product.sort_order'
+														
+												),
+										'limit'=>1,		
+										'order' => 'rand()'		
+								)
+						)));
+						
+		$this->Product->bindModel(array(
+									'belongsTo' => array(
+										'SubCategory' => array(
+											'ClassName' => 'SubCategory',
+											'foreignKey' => 'sub_category_id',
+											'conditions' => array('SubCategory.status' => 1),
+											'fields' => array(
+													'SubCategory.id','SubCategory.lang_id','SubCategory.store_id','SubCategory.cat_id','SubCategory.name','SubCategory.slug','SubCategory.short_description','SubCategory.sort_order','SubCategory.image','SubCategory.status'
+												),
+											'order' => array('SubCategory.sort_order' => 'asc')	
+										)
+									),
+									'hasMany' => array(
+										'ProductModifier' => array(
+											'className' => 'ProductModifier',
+											'foreignKey' => 'product_id',
+											'fields' => array('ProductModifier.id')
+										)
+									)
+								));
+        
+		
+		if(!empty($cats[0])){						
+			if(count($cats)==1){
+					$data = $this->Category->find('all', array('conditions' => array(
+														'Category.id NOT' => $cats,
+														'Category.status' => 1,
+														'Category.lang_id' => $storeId)
+												));
+				}else{
+			$data = $this->Category->find('all', array('conditions' => array(
+														'Category.id NOT IN' => $cats,
+														'Category.status' => 1,
+														'Category.lang_id' => $storeId)
+												));
+				}
+		}else{
+			$data = $this->Category->find('all', array('conditions' => array(
+														'Category.status' => 1,
+														'Category.lang_id' => $storeId)
+												));
+		}
+		
+		//echo '<pre>'; print_r($data); die;
+		//$plu_json = $this->curlGetRequest('https://nkdpizza.com/beta/pos/index.php/menu/'.$menuCountry);
+		
+		$plu_json = $this->curlGetRequest(APIURL.'/index.php/menu/UAE');
+		$plu_json = json_decode($plu_json, true);
+		$plu_json = $plu_json['item'];
+		$resp = array();
+		$all_categories = $cats = $subCats = array();
+		
+		if(!empty($data)){
+			$i = 0;
+			foreach($data as $dat) {
+				
+				if(!in_array($dat['Category']['name'], $all_categories)) {
+					$cats[$i]['id'] = $dat['Category']['id'];
+					$cats[$i]['name'] = $dat['Category']['name'];
+					$cats[$i]['subCats'] = null;
+					$cats[$i]['products'] = array();
+					$cats[$i]['subCatsName'] = array();
+					$all_categories[] = $dat['Category']['name'];
+				}
+				
+				
+				if(!empty($dat['Product'])) {
+					$j = 0; $count = array();
+					$totSubIndex = 0;
+					foreach($dat['Product'] as $prod) {
+						
+						$prod['is_price_mapped'] = 0;
+						$prod['mod_count'] = count($prod['ProductModifier']);
+						unset($prod['ProductModifier']);
+						
+						//map price of product using plu code
+						if(!empty($plu_json)) {
+							foreach($plu_json as $pluData) {
+								//echo '<pre>'; print_r($pluData); die;
+								foreach($pluData as $pdat) {
+									//echo '<pre>'; print_r($pdat); 
+									if($dat['Category']['id'] == '1') {
+										
+										if($prod['plu_code'] == 999999) {
+											$prod['is_price_mapped'] = 1;
+											$prod['price'] = array(
+																'small' => 0,
+																'medium' => 0,
+																'large' => 0,
+																'freeSize' =>0
+															);	
+										}else{
+											
+											if(is_array($pdat)) {
+												foreach($pdat as $pz) {
+													if(isset($pz['PLU'])) {
+														if($prod['plu_code'] == $pz['PLU']) {
+															$prod['is_price_mapped'] = 1;
+															$prod['price'] = array(
+																'small' => $pz['PriceSm'],
+																'medium' => $pz['PriceMed'],
+																'large' => $pz['PriceLg'],
+																'freeSize' =>null
+															);
+														}	
+													}
+												}
+											}
+											
+										}
+										//echo '<pre>'; print_r($prod); die;
+										
+									}else{
+										if(isset($pdat['PLU'])) {
+											if($prod['plu_code'] == $pdat['PLU']) {
+												$prod['is_price_mapped'] = 1;
+												$prod['price'] = array(
+																		'small' => null,
+																		'medium' => null,
+																		'large' => null,
+																		'freeSize' =>$pdat['Price']
+																	);
+											}	
+										}
+									}									
+								}								
+							}
+						}
+						
+						//echo '<pre>'; print_r($prod); die;
+						if(!empty($prod['sub_category_id'])){
+							
+							if(!in_array($prod['SubCategory']['name'], $cats[$i]['subCatsName'])) {
+								$cats[$i]['subCatsName'][] = $prod['SubCategory']['name'];
+								$cats[$i]['subCatsPrice'][] = $prod['SubCategory']['short_description'];
+							}
+							
+							$subIndex = array_search($prod['SubCategory']['name'], $cats[$i]['subCatsName']);
+							$tname = 'subCat_'.$subIndex;
+							
+							
+							if(!isset($count[$prod['SubCategory']['name']])) {
+								$count[$prod['SubCategory']['name']] = 0;
+							}
+							
+							$sName = $prod['SubCategory'];
+							unset($prod['SubCategory']);
+							unset($prod['created']);
+							unset($prod['modified']);
+							
+							//$tName = preg_replace("![^a-z0-9]+!i", "-", $sName['name']);
+							
+							$cats[$i]['subCats'][$tname][$count[$sName['name']]]['name'] = $sName['name'];
+							$cats[$i]['subCats'][$tname][$count[$sName['name']]]['products'][] = $prod;
+							
+							$count[$sName['name']] +=1;
+						}else{
+							if(empty($prod['SubCategory'])){
+								$prod['SubCategory'] =  null;
+							}
+							$cats[$i]['products'][] = $prod;
+						}
+						
+						$j++;
+					}
+				}
+				
+				$i++;			
+			}
+		}
+			
+		
+		//die;
+		//echo '<pre>'; print_r($cats); die;
+        echo json_encode(array('itemList'=>$cats));	
+		die;
+	}
 
-
+	public function getStores(){
+		
+		$stores = $this->Store->find('all', array(
+				'conditions' => array(
+					'Store.status' => 1
+				)
+			));
+		echo json_encode($stores);
+		die;
+	}
 	
 }
