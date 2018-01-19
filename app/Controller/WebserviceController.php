@@ -1866,10 +1866,11 @@ class WebserviceController extends AppController {
 	
 	
 	public function getStoresFromPostalCode($code) {
-		
+		//Configure::write('debug', 2);
+		//echo $code;
 		if($code != '') {
 			
-			$url = 'http://maps.googleapis.com/maps/api/geocode/json?address='.$code;			
+			$url = 'https://maps.googleapis.com/maps/api/geocode/json?address='.$code.'&key=AIzaSyCkESMKdW4fPiX7BnL5gQnv_o3tTUOcZQ0';			
 			$result     = $this->curlGetRequest($url);
 			$response   = json_decode($result, true);
 			$stores = array();
@@ -1885,13 +1886,14 @@ class WebserviceController extends AppController {
 				}
 
 
-				//$city = strtolower($response['results'][0]['address_components'][1]['long_name']);
-				
+				$city = strtolower($response['results'][0]['address_components'][1]['long_name']);
+				//echo city;
 				$stores = $this->Store->find('all', array(							
 								'conditions' => array(
 									'OR' => array(
-										'LOWER(Store.city)' => $city,
-										'LOWER(Store.state)' => $city
+										'LOWER(Store.store_address) LIKE' => '%'.$city.'%',
+										'LOWER(Store.city) LIKE' => '%'.$city.'%',
+										'LOWER(Store.state) LIKE' => '%'.$city.'%'
 									),
 									'Store.status' => 1	
 								),
@@ -4118,8 +4120,21 @@ function getSuggestedProductsApp($storeId=1){
         $this->layout = FALSE;
         $this->autoRender = FALSE;
 		$this->Category->recursive = 2;
-		$cats=$this->request->data('catsId');
-		//pr($cats);die;
+		if($this->request->data('catsId')){
+			$cats=$this->request->data('catsId');
+		}else if($this->request->input ( 'json_decode', true)){
+			$cats=$this->request->input ( 'json_decode', true);
+			$cats=$cats['catsId'];
+		}
+		$cats=explode(',',$cats);
+		if (empty($cats[0])) {
+            $cats[0] = 1;
+			$cats[1] = 7;
+        } else {
+            array_push($cats, 1);
+			array_push($cats, 7);
+        }
+		//pr($cats);//die;
 		$this->Category->bindModel(array('hasMany'=>array(
 								'Product' => array(
 										'conditions' => array('Product.status' => 1, 'Product.lang_id !=' => 0),
@@ -4130,7 +4145,8 @@ function getSuggestedProductsApp($storeId=1){
 														'Product.thumb_image','Product.sort_order'
 														
 												),
-										'order' => array('Product.sort_order' => 'asc')		
+										'limit'=>1,		
+										'order' => 'rand()'		
 								)
 						)));
 						
@@ -4156,12 +4172,20 @@ function getSuggestedProductsApp($storeId=1){
 								));
         
 		
-		if(!empty($cats)){						
+		if(!empty($cats[0])){						
+			if(count($cats)==1){
+					$data = $this->Category->find('all', array('conditions' => array(
+														'Category.id NOT' => $cats,
+														'Category.status' => 1,
+														'Category.lang_id' => $storeId)
+												));
+				}else{
 			$data = $this->Category->find('all', array('conditions' => array(
 														'Category.id NOT IN' => $cats,
 														'Category.status' => 1,
 														'Category.lang_id' => $storeId)
 												));
+				}
 		}else{
 			$data = $this->Category->find('all', array('conditions' => array(
 														'Category.status' => 1,
